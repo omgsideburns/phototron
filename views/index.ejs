@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NodeJS PhotoBooth</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>PhotoBooth 📸</h1>
+    <video id="preview" autoplay playsinline width="640"></video>
+    <br>
+    <button id="capture">Take Photo</button>
+    <div id="output"></div>
+
+    <script>
+        const socket = io();
+        const video = document.getElementById('preview');
+        const output = document.getElementById('output');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => video.srcObject = stream)
+            .catch(err => console.error('Camera error:', err));
+
+        document.getElementById('capture').addEventListener('click', () => {
+            socket.emit('take-photo');
+        });
+
+        socket.on('photo-taken', data => {
+            output.innerHTML = `<img src="${data.path}" width="300">`;
+        });
+        let lastPhoto = '';
+
+
+    </script>
+</body>
+</html>

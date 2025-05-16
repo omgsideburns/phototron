@@ -1,0 +1,52 @@
+flowchart TD
+
+a(
+    **Index**
+    css theming
+    clickable elements for each subpage
+    mouse/touch/gpio input
+)
+
+b(
+    **Take Photo**
+    takes one to N pictures
+    arranges them on to a template
+    saves original AND 
+    previews this output
+)
+
+c(
+    **Gallery**
+    view event photos
+    reprint photos
+)
+
+d(
+    **Settings**
+    *pin protected*
+    create/select event
+    theme selection
+    printer settings
+)
+
+e(
+    **System Config**
+    GPIO input / output
+    printer setup
+    remote access
+)
+
+g(
+    **Idle / Attract Mode**
+    slideshow
+    timeout to main
+)
+f(
+    **Future Ideas**
+    QR downloads
+    social media sharing
+    online gallery uploads
+)
+e ~~~ a
+a <-.-> b & c & d & g
+a -.-> f

@@ -1,48 +1,89 @@
-const express = require('express');
+import express from 'express';
+import { createServer } from 'http';
+import { Server as SocketIO } from 'socket.io';
+import Webcam from 'node-webcam';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { exec } from 'child_process';
+import compositeRoute from './routes/composite.js';
+import { config } from './config.js';
+
 const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-const Webcam = require('node-webcam');
-const Jimp = require('jimp');
-const fs = require('fs');
-const path = require('path');
-const { exec } = require('child_process'); // using exec for printing
 
-const PORT = 3000;
+app.use(express.json({ limit: '5mb' }));
+app.use((req, res, next) => {
+    if (req.is('application/json')) {
+        next();
+    } else {
+        let data = '';
+        req.on('data', chunk => {
+            data += chunk;
+        });
+        req.on('end', () => {
+            if (!data) return next(); // skip empty bodies
+            try {
+                req.body = JSON.parse(data);
+                next();
+            } catch (err) {
+                console.warn('❌ Failed to parse JSON body:', data);
+                next();
+            }
+        });
+    }
+});
 
-// Configure webcam
+// testing browser snaps instead of imagesnap
+import uploadBrowserPhoto from './routes/upload-browser-photo.js';
+app.use(uploadBrowserPhoto);
+// end browser test
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.json({ limit: '5mb' }));
+
+const http = createServer(app);
+const io = new SocketIO(http);
+
+const { app: appConfig, camera: camConfig, paths } = config;
+
+app.use(compositeRoute);
+
+// Webcam setup using config
 const cam = Webcam.create({
-    width: 1280,
-    height: 720,
-    delay: 0,
+    width: parseInt(camConfig.resolution.split('x')[0]),
+    height: parseInt(camConfig.resolution.split('x')[1]),
+    delay: camConfig.delay || 0,
     saveShots: true,
-    output: "jpeg",
-    device: false,
+    output: camConfig.outputFormat || 'jpeg',
+    device: camConfig.device || false,
     callbackReturn: "location",
-    verbose: true // 👈 enables debug logging
+    verbose: !!appConfig.debug
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.set('view engine', 'ejs');
+// Static assets
+app.use(express.static(path.join(__dirname, paths.public)));
+app.use('/captured', express.static(path.join(__dirname, paths.captured)));
 
-// ROUTES
+// Routes
 app.get('/', (req, res) => {
-    res.render('index');
+    res.sendFile(path.join(__dirname, paths.public, 'index.html'));
 });
 
-// SOCKETS
+// Sockets
 io.on('connection', (socket) => {
     console.log('User connected');
 
-    socket.on('take-photo', async () => {
+    socket.on('take-photo', () => {
         console.log('📸 take-photo event received');
         const timestamp = Date.now();
         const filename = `photo_${timestamp}.jpg`;
-        const filepath = path.join(__dirname, 'captured', filename);
+        const filepath = path.join(__dirname, paths.captured, filename);
 
-        cam.capture(filepath, async (err, data) => {
+        cam.capture(filepath, (err, data) => {
             if (err) {
-                console.error('Capture error:', err);
+                console.error('❌ Capture error:', err);
                 socket.emit('photo-error');
                 return;
             }
@@ -52,9 +93,8 @@ io.on('connection', (socket) => {
         });
     });
 
-    // Handle print request
     socket.on('print-photo', (filename) => {
-        const photoPath = path.join(__dirname, 'captured', filename);
+        const photoPath = path.join(__dirname, paths.captured, filename);
 
         if (!fs.existsSync(photoPath)) {
             socket.emit('print-error', 'File not found');
@@ -63,7 +103,7 @@ io.on('connection', (socket) => {
 
         exec(`lp "${photoPath}"`, (error, stdout, stderr) => {
             if (error) {
-                console.error(`Print error: ${error.message}`);
+                console.error(`🖨️ Print error: ${error.message}`);
                 socket.emit('print-error', error.message);
                 return;
             }
@@ -73,9 +113,7 @@ io.on('connection', (socket) => {
     });
 });
 
-// Serve captured photos
-app.use('/captured', express.static(path.join(__dirname, 'captured')));
-
-http.listen(PORT, () => {
-    console.log(`PhotoBooth running at http://localhost:${PORT}`);
+// Start server
+http.listen(appConfig.port, () => {
+    console.log(`🚀 Phototron running at http://localhost:${appConfig.port}`);
 });

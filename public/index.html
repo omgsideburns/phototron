@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Phototron 📸</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/app.js" defer></script>
+</head>
+<body>
+  <h1>Phototron 📸</h1>
+
+  <div class="button" onclick="location.href='/take.html'">Take Photo</div>
+  <div class="button" onclick="location.href='/gallery.html'">Gallery</div>
+  <div class="button" onclick="location.href='/settings.html'">Settings</div>
+  <div class="button" style="opacity: 0.5; pointer-events: none;">Future Ideas</div>
+
+  <div id="output"></div>
+</script>
+
+  <!-- Idle timeout script -->
+  <script>
+    // idle timeout in ms (can be pulled from config endpoint later)
+    const IDLE_TIMEOUT = 60000;
+    let idleTimer;
+
+    function resetIdleTimer() {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        location.href = "/attract.html";
+      }, IDLE_TIMEOUT);
+    }
+
+    // reset timer on activity
+    ['mousemove', 'keydown', 'touchstart'].forEach(evt =>
+      document.addEventListener(evt, resetIdleTimer)
+    );
+
+    resetIdleTimer(); // start the timer
+  </script>
+</body>
+</html>

@@ -8,6 +8,24 @@ This is a homebrew solution using Node.js, Socket.IO, and whatever else I feel l
 
 ---
 
+## Current Status
+
+Under development.  Not working.
+
+Currently building on OSX, but planning for it to work on a raspi 4. Should work on both.
+
+Currently capturing the photos from the preview video feed.  Actually a bit snappier than using a separate service for capture.
+
+Still need to finish adding features listed in the chart.
+
+Need to format all of the html/css. Super ugly placeholders all over the place. 
+
+Need to put build some output templates.
+
+Need to build config page, gallery page, yada yada yada..
+
+---
+
 ## Flow Overview
 
 ![Flowchart Overview](docs/chart.svg)

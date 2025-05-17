@@ -15,6 +15,17 @@ b(
     previews this output
 )
 
+b1(
+    composite photo
+    save
+    print
+    retake
+)
+
+b2(
+    print photo
+)
+
 c(
     **Gallery**
     view event photos
@@ -48,5 +59,7 @@ f(
     online gallery uploads
 )
 e ~~~ a
-a <-.-> b & c & d & g
+a --> b --> b1 --> b2
+
+a <-.-> c & d & g
 a -.-> f

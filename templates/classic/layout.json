@@ -1,0 +1,15 @@
+{
+  "name": "classic-strip",
+  "background": "background.png",
+  "layouts": {
+    "1": [
+      { "x": 100, "y": 100, "width": 600, "height": 800 }
+    ],
+    "4": [
+      { "x": 100, "y": 100, "width": 600, "height": 800 },
+      { "x": 100, "y": 950, "width": 600, "height": 800 },
+      { "x": 100, "y": 1800, "width": 600, "height": 800 },
+      { "x": 100, "y": 2650, "width": 600, "height": 800 }
+    ]
+  }
+}

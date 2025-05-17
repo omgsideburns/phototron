@@ -18,3 +18,6 @@ build/
 
 # Keep intentionally empty directories
 !.gitkeep
+
+# ignore test photos
+captured/*.jpg

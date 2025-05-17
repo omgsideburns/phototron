@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Take Photo — Phototron</title>
+  <link rel="stylesheet" href="/css/main.css" />
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- TODO: Trigger GPIO LED flash when countdown starts -->
+  <script src="/js/take-browser.js" defer></script>
+</head>
+<body>
+  <h1>📷 Let’s take some pictures</h1>
+
+  <div id="camera-wrapper" style="display: none; position: relative;">
+    <video id="camera-preview" autoplay playsinline muted style="width: 100%; max-width: 640px; border-radius: 8px;"></video>
+    <div id="countdown-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center; font-size: 5rem; color: white; text-shadow: 2px 2px 8px #000;">
+    </div>
+  </div>
+  <div id="white-flash" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: white; z-index: 999;"></div>
+
+  <div id="prompt" class="section">
+    <p>How many photos would you like to take?</p>
+    <div id="photo-options">
+      <button class="button" data-count="1">Just 1 Photo</button>
+      <button class="button" id="multi-photo-btn" data-count="">Take N Photos</button>
+      <button id="btnCaptureFromPreview">Use This Frame</button>
+    </div>
+  </div>
+
+  <div id="status" class="section" style="display: none;">
+    <p id="status-text">Getting ready...</p>
+  </div>
+
+  <div id="preview" class="section" style="display: none;">
+    <p>Here’s your photo!</p>
+    <img id="final-image" src="" alt="Preview" />
+    <div>
+      <button id="print-btn" class="button">Print</button>
+    </div>
+    <p id="countdown">Returning to start in 10...</p>
+  </div>
+  <div class="section">
+    <button class="button" onclick="location.href='/'">Cancel / Back</button>
+  </div>
+</body>
+</html>

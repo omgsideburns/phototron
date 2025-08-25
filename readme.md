@@ -1,5 +1,3 @@
-.readme
-
 # Phototron
 
 A custom photo booth system built to replace the now-abandoned `pibooth` — because it doesn’t support current versions of Raspberry Pi OS, and honestly, it was starting to get a little clunky.

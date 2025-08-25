@@ -1,0 +1,21 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# macOS system files
+.DS_Store
+
+# Logs
+
+
+# Optional build artifacts
+dist/
+build/
+
+# Keep intentionally empty directories
+!.gitkeep
+
+# ignore test photos
+captured/*.jpg

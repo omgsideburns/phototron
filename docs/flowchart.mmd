@@ -1,0 +1,60 @@
+flowchart TD
+
+a(
+    **Idle / Attract Mode**
+    slideshow
+START Button
+)
+
+b(
+    **Take Photo**
+    show preview
+    countdown
+    take picture
+    repeat count/take N times
+)
+
+c(
+    **Preview Screen**
+    *Show Preview* 
+    Print?
+    Yes/No
+)
+
+d(
+    **Email Photos**
+    Email?
+    Yes/No
+)
+
+gallery(
+    **Gallery**
+    view event photos
+    reprint photos
+)
+
+settings(
+    **Settings**
+    *pin protected*
+    create/select event
+    theme selection
+    printer settings
+)
+
+config(
+    **System Config**
+    GPIO input / output
+    printer setup
+    remote access
+)
+
+f(
+    **Future Ideas**
+    QR downloads
+    social media sharing
+    online gallery uploads
+)
+
+a -...- gallery & settings
+
+a --> b --> c --> d --> a

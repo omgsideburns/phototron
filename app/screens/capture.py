@@ -1,5 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt
+import os
+from datetime import datetime
 
 class CaptureScreen(QWidget):
     def __init__(self, controller=None):
@@ -20,5 +22,19 @@ class CaptureScreen(QWidget):
         self.setLayout(layout)
 
     def take_photo(self):
-        print("TAKE PHOTO!")
-        # Placeholder: go to preview screen later
+        print("TAKE PHOTO pressed")
+        session_path = self.controller.current_session_dir
+        if not session_path:
+            print("⚠️ No session selected.")
+            return
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{timestamp}.jpg"
+        full_path = os.path.join(session_path, filename)
+
+        try:
+            self.controller.camera.start_camera()
+            self.controller.camera.capture(full_path)
+            print(f"✅ Photo saved to {full_path}")
+        except Exception as e:
+            print(f"❌ Capture failed: {e}")

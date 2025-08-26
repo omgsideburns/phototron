@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QPixmap
 import os
 from datetime import datetime
 from app.collage import generate_collage

@@ -22,7 +22,6 @@ class AppController:
         self.settings_screen = SettingsScreen(controller=self)
         self.email_screen = EmailScreen(controller=self)
         self.preview_screen = PreviewScreen(controller=self)
-        self.camera = CameraManager(config=self.config.get("camera", {}))
 
         self.stack.addWidget(self.idle_screen)
         self.stack.addWidget(self.capture_screen)
@@ -32,7 +31,7 @@ class AppController:
 
         self.stack.setCurrentWidget(self.idle_screen)
 
-        self.camera = CameraManager()
+        self.camera = CameraManager(config=self.config.get("camera", {}))
 
     def widget(self):
         return self.stack

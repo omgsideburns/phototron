@@ -4,7 +4,9 @@ import os
 def generate_collage(photo_paths, output_path, logo_path=None,
                      canvas_size=(1200, 1800), grid=(2, 2)):
     if len(photo_paths) != 3:
+        print("🛑 Expected exactly 3 photo paths")
         raise ValueError("Expected exactly 3 photo paths")
+
 
     collage = Image.new("RGB", canvas_size, "white")
     cell_width = canvas_size[0] // grid[0]
@@ -38,4 +40,5 @@ def generate_collage(photo_paths, output_path, logo_path=None,
                   "LOGO HERE", fill="black")
 
     collage.save(output_path)
+    print("saving pictures...")
     return output_path

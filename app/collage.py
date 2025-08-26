@@ -1,12 +1,14 @@
 from PIL import Image
 import os
 
-def generate_collage(photo_paths, output_path, logo_path=None,
-                     canvas_size=(1200, 1800), grid=(2, 2)):
+def generate_collage(photo_paths, output_path, logo_path=None, config=None):
     if len(photo_paths) != 3:
         print("🛑 Expected exactly 3 photo paths")
         raise ValueError("Expected exactly 3 photo paths")
 
+    config = config or {}
+    canvas_size = tuple(config.get("canvas_size", (2400, 3600)))
+    grid = tuple(config.get("grid", (2, 2)))
 
     collage = Image.new("RGB", canvas_size, "white")
     cell_width = canvas_size[0] // grid[0]
@@ -40,5 +42,5 @@ def generate_collage(photo_paths, output_path, logo_path=None,
                   "LOGO HERE", fill="black")
 
     collage.save(output_path)
-    print("saving pictures...")
+    print("✅ Collage saved:", output_path)
     return output_path

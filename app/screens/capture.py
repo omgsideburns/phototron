@@ -9,7 +9,7 @@ class CaptureScreen(QWidget):
         super().__init__()
         self.controller = controller
         self.photo_index = 0
-        self.photos_to_take = 3  # We'll make this configurable later
+        self.photos_to_take = self.controller.config.get("photo", {}).get("count", 3)
         self.photo_paths = []
 
         self.layout = QVBoxLayout()
@@ -75,8 +75,6 @@ class CaptureScreen(QWidget):
             QTimer.singleShot(1000, self.begin_countdown)
         else:
             print("🎉 All photos captured.")
-
-            from app.collage import generate_collage
 
             # NEW: Composite folder
             comps_dir = os.path.join(session_path, "comps")

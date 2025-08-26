@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt, QTimer
 import os
 from datetime import datetime
+from app.collage import generate_collage
 
 class CaptureScreen(QWidget):
     def __init__(self, controller=None):
@@ -71,5 +72,10 @@ class CaptureScreen(QWidget):
         else:
             print("🎉 All photos captured.")
             # TODO: Stitch and send to preview screen
-            self.controller.preview_screen.load_photo(full_path)
+            from app.collage import generate_collage
+
+            composite_path = os.path.join(session_path, "composite.jpg")
+            generate_collage(self.photo_paths, composite_path, logo_path="assets/logo.png")
+
+            self.controller.preview_screen.load_photo(composite_path)
             self.controller.go_to(self.controller.preview_screen)

@@ -23,7 +23,7 @@ class AppController:
         self.stack.addWidget(self.capture_screen)
         self.stack.addWidget(self.settings_screen)
         self.stack.addWidget(self.email_screen)
-        self.preview_screen = PreviewScreen(controller=self)
+        self.stack.addWidget(self.preview_screen)
 
         self.stack.setCurrentWidget(self.idle_screen)
 

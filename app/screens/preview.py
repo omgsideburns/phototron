@@ -28,7 +28,7 @@ class PreviewScreen(QWidget):
     def load_photo(self, filepath):
         self.current_photo_path = filepath
         if os.path.exists(filepath):
-            pixmap = QPixmap(filepath).scaled(800, 600, Qt.KeepAspectRatio)
+            pixmap = QPixmap(filepath).scaled(3600, 2400, Qt.KeepAspectRatio)
             self.photo_label.setPixmap(pixmap)
         else:
             self.photo_label.setText("❌ Could not load photo")

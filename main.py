@@ -5,7 +5,7 @@ import sys
 app = QApplication(sys.argv)
 
 controller = AppController()
-controller.widget().showFullScreen()  # This shows the stack with IdleScreen already loaded
+controller.widget().show()  # This shows the stack with IdleScreen already loaded
 
 sys.exit(app.exec())
 

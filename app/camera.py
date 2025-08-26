@@ -17,7 +17,7 @@ class CameraManager:
             resolution = tuple(self.config.get("resolution", [1280, 720]))
 
             config = self.picam.create_preview_configuration(
-                main={"size": resolution}
+                main={"size": resolution},
                 transform=Transform(rotation=rotation)
             )
             self.picam.configure(config)

@@ -71,3 +71,5 @@ class CaptureScreen(QWidget):
         else:
             print("🎉 All photos captured.")
             # TODO: Stitch and send to preview screen
+            self.controller.preview_screen.load_photo(full_path)
+            self.controller.go_to(self.controller.preview_screen)

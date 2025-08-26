@@ -55,9 +55,13 @@ class CaptureScreen(QWidget):
             print("⚠️ No session selected.")
             return
 
+        # NEW: Raw photo folder
+        raw_dir = os.path.join(session_path, "raw")
+        os.makedirs(raw_dir, exist_ok=True)
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{timestamp}_photo{self.photo_index + 1}.jpg"
-        full_path = os.path.join(session_path, filename)
+        full_path = os.path.join(raw_dir, filename)
 
         try:
             self.controller.camera.capture(full_path)
@@ -71,11 +75,23 @@ class CaptureScreen(QWidget):
             QTimer.singleShot(1000, self.begin_countdown)
         else:
             print("🎉 All photos captured.")
-            # TODO: Stitch and send to preview screen
+
             from app.collage import generate_collage
 
-            composite_path = os.path.join(session_path, "composite.jpg")
-            generate_collage(self.photo_paths, composite_path, logo_path="assets/logo.png")
+            # NEW: Composite folder
+            comps_dir = os.path.join(session_path, "comps")
+            os.makedirs(comps_dir, exist_ok=True)
+            composite_path = os.path.join(comps_dir, "composite.jpg")
+
+            # Event-local logo file
+            logo_path = os.path.join(session_path, self.controller.config['collage']['logo_filename'])
+
+            generate_collage(
+                self.photo_paths,
+                composite_path,
+                logo_path=logo_path,
+                canvas_size=(self.controller.config['collage']['width'], self.controller.config['collage']['height'])
+            )
 
             self.controller.preview_screen.load_photo(composite_path)
             self.controller.go_to(self.controller.preview_screen)

@@ -6,9 +6,13 @@ from app.screens.email import EmailScreen
 from app.camera import CameraManager
 from app.screens.preview import PreviewScreen
 import os
+import json
 
 class AppController:
     def __init__(self):
+        with open("config.json", "r") as f:
+            self.config = json.load(f)
+
         self.stack = QStackedWidget()
 
         self.current_session_dir = self.load_last_session()

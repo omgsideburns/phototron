@@ -1,0 +1,18 @@
+{
+    "base_event_path": "assets/events",
+    "camera": {
+        "rotation": 90,
+        "resolution": [1920, 1080]
+    },
+    "photo": {
+        "count": 3,
+        "format": "jpg",
+        "quality": 90
+    },
+    "collage": {
+        "width": 1200,
+        "height": 1800,
+        "layout": "2x2",
+        "logo_filename": "logo.png"
+    }
+}

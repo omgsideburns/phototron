@@ -88,7 +88,7 @@ class CaptureScreen(QWidget):
                 self.photo_paths,
                 composite_path,
                 logo_path=logo_path,
-                canvas_size=self.controller.config.get("collage", {})
+                config=self.controller.config.get("collage", {})
             )
 
             self.controller.preview_screen.load_photo(composite_path)

@@ -4,6 +4,7 @@ from app.screens.capture import CaptureScreen  # ⬅️ NEW
 from app.screens.settings import SettingsScreen
 from app.screens.email import EmailScreen
 from app.camera import CameraManager
+from app.screens.preview import PreviewScreen
 import os
 
 class AppController:

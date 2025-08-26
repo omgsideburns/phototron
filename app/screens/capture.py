@@ -36,5 +36,7 @@ class CaptureScreen(QWidget):
             self.controller.camera.start_camera()
             self.controller.camera.capture(full_path)
             print(f"✅ Photo saved to {full_path}")
+            self.controller.preview_screen.load_photo(full_path)
+            self.controller.go_to(self.controller.preview_screen)
         except Exception as e:
             print(f"❌ Capture failed: {e}")

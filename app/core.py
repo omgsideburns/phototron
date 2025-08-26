@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QStackedWidget
 from app.screens.idle import IdleScreen
 from app.screens.capture import CaptureScreen  # ⬅️ NEW
 from app.screens.settings import SettingsScreen
+from app.screens.email import EmailScreen
 from app.camera import CameraManager
 import os
 
@@ -14,10 +15,12 @@ class AppController:
         self.idle_screen = IdleScreen(controller=self)
         self.capture_screen = CaptureScreen(controller=self)
         self.settings_screen = SettingsScreen(controller=self)
+        self.email_screen = EmailScreen(controller=self)
         
         self.stack.addWidget(self.idle_screen)
         self.stack.addWidget(self.capture_screen)
         self.stack.addWidget(self.settings_screen)
+        self.stack.addWidget(self.email_screen)
 
         self.stack.setCurrentWidget(self.idle_screen)
 

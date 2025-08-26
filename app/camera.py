@@ -1,16 +1,25 @@
 import os
 from picamera2 import Picamera2, Preview
+from libcamera import Transform
 import time
 
 class CameraManager:
     def __init__(self):
         self.picam = None
         self.preview_started = False
+        self.config = config or {}
 
     def start_camera(self):
         if self.picam is None:
             self.picam = Picamera2()
-            config = self.picam.create_preview_configuration()
+
+            rotation = self.config.get("rotation", 0)
+            resolution = tuple(self.config.get("resolution", [1280, 720]))
+
+            config = self.picam.create_preview_configuration(
+                main={"size": resolution}
+                transform=Transform(rotation=rotation)
+            )
             self.picam.configure(config)
             self.picam.start_preview(Preview.NULL)  # We’ll render to the GUI later
             self.picam.start()

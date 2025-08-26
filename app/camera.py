@@ -20,10 +20,13 @@ class CameraManager:
             if frame is None:
                 return None
 
+            # Convert BGR (from picamera2) to RGB
+            frame = frame[:, :, ::-1]  # or use cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
             height, width, channel = frame.shape
             bytes_per_line = 3 * width
             image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
-            return image.rgbSwapped()  # Convert BGR → RGB
+            return image
         except Exception as e:
             print(f"⚠️ Preview frame error: {e}")
             return None

@@ -2,6 +2,7 @@ import os
 from picamera2 import Picamera2, Preview
 from libcamera import Transform
 from PySide6.QtGui import QImage
+from PySide6.QtCore import Qt, QTimer
 import time
 
 class CameraManager:

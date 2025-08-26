@@ -22,6 +22,7 @@ class IdleScreen(QWidget):
 
     def start_pressed(self):
         print("START pressed")
+        self.controller.capture_screen.start_sequence()
         self.controller.go_to(self.controller.capture_screen)
 
     def open_settings(self):

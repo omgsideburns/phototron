@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 import os
 from datetime import datetime
 
@@ -7,36 +7,67 @@ class CaptureScreen(QWidget):
     def __init__(self, controller=None):
         super().__init__()
         self.controller = controller
+        self.photo_index = 0
+        self.photos_to_take = 3  # We'll make this configurable later
+        self.photo_paths = []
 
-        layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
 
-        self.preview_label = QLabel("📸 [ Camera Preview Placeholder ]")
+        self.preview_label = QLabel("📸 Camera Preview Starting...")
         self.preview_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.preview_label)
+        self.layout.addWidget(self.preview_label)
 
-        take_photo_btn = QPushButton("Take Photo")
-        take_photo_btn.setMinimumHeight(80)
-        take_photo_btn.clicked.connect(self.take_photo)
-        layout.addWidget(take_photo_btn)
+        self.countdown_label = QLabel("")
+        self.countdown_label.setAlignment(Qt.AlignCenter)
+        self.countdown_label.setStyleSheet("font-size: 48px;")
+        self.layout.addWidget(self.countdown_label)
 
-        self.setLayout(layout)
+        self.setLayout(self.layout)
+
+    def start_sequence(self):
+        self.photo_index = 0
+        self.photo_paths = []
+        self.preview_label.setText("📸 Warming up camera...")
+        self.controller.camera.start_camera()
+
+        QTimer.singleShot(2000, self.begin_countdown)
+
+    def begin_countdown(self):
+        self.count = 3
+        self.countdown_label.setText(str(self.count))
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_countdown)
+        self.timer.start(1000)
+
+    def update_countdown(self):
+        self.count -= 1
+        if self.count > 0:
+            self.countdown_label.setText(str(self.count))
+        else:
+            self.timer.stop()
+            self.countdown_label.setText("📷")
+            QTimer.singleShot(500, self.take_photo)
 
     def take_photo(self):
-        print("TAKE PHOTO pressed")
         session_path = self.controller.current_session_dir
         if not session_path:
             print("⚠️ No session selected.")
             return
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{timestamp}.jpg"
+        filename = f"{timestamp}_photo{self.photo_index + 1}.jpg"
         full_path = os.path.join(session_path, filename)
 
         try:
-            self.controller.camera.start_camera()
             self.controller.camera.capture(full_path)
-            print(f"✅ Photo saved to {full_path}")
-            self.controller.preview_screen.load_photo(full_path)
-            self.controller.go_to(self.controller.preview_screen)
+            self.photo_paths.append(full_path)
+            print(f"✅ Photo {self.photo_index + 1} saved to {full_path}")
         except Exception as e:
             print(f"❌ Capture failed: {e}")
+
+        self.photo_index += 1
+        if self.photo_index < self.photos_to_take:
+            QTimer.singleShot(1000, self.begin_countdown)
+        else:
+            print("🎉 All photos captured.")
+            # TODO: Stitch and send to preview screen

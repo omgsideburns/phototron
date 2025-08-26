@@ -4,7 +4,7 @@ from libcamera import Transform
 import time
 
 class CameraManager:
-    def __init__(self):
+    def __init__(self, config=None):
         self.picam = None
         self.preview_started = False
         self.config = config or {}

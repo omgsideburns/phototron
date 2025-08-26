@@ -23,6 +23,9 @@ class CaptureScreen(QWidget):
         self.countdown_label.setStyleSheet("font-size: 48px;")
         self.layout.addWidget(self.countdown_label)
 
+        self.preview_timer = QTimer()
+        self.preview_timer.timeout.connect(self.update_preview)
+
         self.setLayout(self.layout)
 
     def start_sequence(self):
@@ -30,8 +33,15 @@ class CaptureScreen(QWidget):
         self.photo_paths = []
         self.preview_label.setText("📸 Warming up camera...")
         self.controller.camera.start_camera()
+        self.preview_timer.start(50)  # ~20 FPS
 
         QTimer.singleShot(2000, self.begin_countdown)
+
+    def update_preview(self):
+        frame = self.controller.camera.get_qt_preview_frame()
+        if frame:
+            pixmap = QPixmap.fromImage(frame.scaled(800, 600, Qt.KeepAspectRatio))
+            self.preview_label.setPixmap(pixmap)
 
     def begin_countdown(self):
         self.count = 3
@@ -76,6 +86,8 @@ class CaptureScreen(QWidget):
         else:
             print("🎉 All photos captured.")
 
+            self.preview_timer.stop()
+
             # NEW: Composite folder
             comps_dir = os.path.join(session_path, "comps")
             os.makedirs(comps_dir, exist_ok=True)
@@ -90,6 +102,6 @@ class CaptureScreen(QWidget):
                 logo_path=logo_path,
                 config=self.controller.config.get("collage", {})
             )
-
+            
             self.controller.preview_screen.load_photo(composite_path)
             self.controller.go_to(self.controller.preview_screen)

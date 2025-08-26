@@ -16,11 +16,13 @@ class AppController:
         self.capture_screen = CaptureScreen(controller=self)
         self.settings_screen = SettingsScreen(controller=self)
         self.email_screen = EmailScreen(controller=self)
-        
+        self.preview_screen = PreviewScreen(controller=self)
+
         self.stack.addWidget(self.idle_screen)
         self.stack.addWidget(self.capture_screen)
         self.stack.addWidget(self.settings_screen)
         self.stack.addWidget(self.email_screen)
+        self.preview_screen = PreviewScreen(controller=self)
 
         self.stack.setCurrentWidget(self.idle_screen)
 

@@ -1,18 +1,15 @@
+from PySide6.QtCore import Qt, QFile, QTextStream
 from PySide6.QtWidgets import QApplication
+from app.config import APP_ROOT
 from app.core import AppController
+import os
 import sys
 
-app = QApplication(sys.argv)
-
-controller = AppController()
-controller.widget().show()  # This shows the stack with IdleScreen already loaded
-
-sys.exit(app.exec())
+os.chdir(APP_ROOT)
 
 app = QApplication(sys.argv)
 controller = AppController()
-controller.widget().showFullScreen()
-stack = QStackedWidget()
-stack.addWidget(IdleScreen())
-stack.showFullScreen()
+controller.widget().resize(800, 600)
+controller.widget().show()  # or .showFullScreen()
 sys.exit(app.exec())
+

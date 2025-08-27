@@ -1,11 +1,10 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QListWidget, QMessageBox
 from PySide6.QtCore import Qt
+from app.config import APP_ROOT, CONFIG, LAST_SESSION_FILE, EVENT_BASE_PATH
 import os
 
-EVENTS_DIR = "phototron/assets/events"
-
 class SettingsScreen(QWidget):
-    def __init__(self, controller=None):
+    def __init__(self, controller):
         super().__init__()
         self.controller = controller
         self.setWindowTitle("Settings")
@@ -39,10 +38,10 @@ class SettingsScreen(QWidget):
 
     def refresh_session_list(self):
         self.session_list.clear()
-        if not os.path.exists(EVENTS_DIR):
-            os.makedirs(EVENTS_DIR)
-        for name in os.listdir(EVENTS_DIR):
-            full_path = os.path.join(EVENTS_DIR, name)
+        if not os.path.exists(EVENT_BASE_PATH):
+            os.makedirs(EVENT_BASE_PATH)
+        for name in os.listdir(EVENT_BASE_PATH):
+            full_path = os.path.join(EVENT_BASE_PATH, name)
             if os.path.isdir(full_path):
                 self.session_list.addItem(name)
 
@@ -55,7 +54,7 @@ class SettingsScreen(QWidget):
         if not name:
             QMessageBox.warning(self, "Error", "Please enter a session name.")
             return
-        full_path = os.path.join(EVENTS_DIR, name)
+        full_path = os.path.join(EVENT_BASE_PATH, name)
         try:
             os.makedirs(full_path, exist_ok=False)
         except FileExistsError:
@@ -67,7 +66,7 @@ class SettingsScreen(QWidget):
 
     def load_session(self, item):
         name = item.text()
-        full_path = os.path.join(EVENTS_DIR, name)
+        full_path = os.path.join(EVENT_BASE_PATH, name)
         self.controller.save_last_session(full_path)
         self.update_current_label()
 

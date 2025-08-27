@@ -1,14 +1,14 @@
 # Node.js dependencies
 node_modules/
 
-# Environment variables
-.env
+# Ignore Venv
+venv
 
 # macOS system files
 .DS_Store
 
-# Logs
-
+# Cache
+*__pycache__*
 
 # Optional build artifacts
 dist/
@@ -18,4 +18,9 @@ build/
 !.gitkeep
 
 # ignore test photos
-captured/*.jpg
+*events/
+*raw/
+*comp/
+
+# ignore config
+config.cfg

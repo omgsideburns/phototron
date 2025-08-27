@@ -1,40 +1,53 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPixmap
-import os
 from datetime import datetime
+import os
+
 from app.collage import generate_collage
+from app.config import PHOTO_CONFIG
 
 class CaptureScreen(QWidget):
-    def __init__(self, controller=None):
+    def __init__(self, controller):
         super().__init__()
         self.controller = controller
         self.photo_index = 0
-        self.photos_to_take = self.controller.config.get("photo", {}).get("count", 3)
         self.photo_paths = []
+        self.photos_to_take = PHOTO_CONFIG.get("count", 3)
+        self.countdown_seconds = PHOTO_CONFIG.get("countdown", 3)
+        self.format = PHOTO_CONFIG.get("format", "jpg")
+        self.quality = PHOTO_CONFIG.get("quality", 90)
+        self.raw_subfolder = PHOTO_CONFIG.get("raw_path", "raw")
+        self.comp_subfolder = PHOTO_CONFIG.get("composite_path", "comps")
 
-        self.layout = QVBoxLayout()
+        # Layout
+        layout = QVBoxLayout()
 
         self.preview_label = QLabel("📸 Camera Preview Starting...")
         self.preview_label.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(self.preview_label)
+        layout.addWidget(self.preview_label)
 
         self.countdown_label = QLabel("")
         self.countdown_label.setAlignment(Qt.AlignCenter)
         self.countdown_label.setStyleSheet("font-size: 48px;")
-        self.layout.addWidget(self.countdown_label)
+        layout.addWidget(self.countdown_label)
 
-        self.preview_timer = QTimer()
+        self.setLayout(layout)
+
+        # Timers
+        self.preview_timer = QTimer(self)
         self.preview_timer.timeout.connect(self.update_preview)
 
-        self.setLayout(self.layout)
+        self.countdown_timer = QTimer(self)
+        self.countdown_timer.timeout.connect(self.update_countdown)
 
     def start_sequence(self):
         self.photo_index = 0
         self.photo_paths = []
         self.preview_label.setText("📸 Warming up camera...")
+
         self.controller.camera.start_camera()
-        self.preview_timer.start(50)  # ~20 FPS
+        self.preview_timer.start(50)  # Roughly 20 FPS
 
         QTimer.singleShot(2000, self.begin_countdown)
 
@@ -45,18 +58,16 @@ class CaptureScreen(QWidget):
             self.preview_label.setPixmap(pixmap)
 
     def begin_countdown(self):
-        self.count = 3
+        self.count = self.countdown_seconds
         self.countdown_label.setText(str(self.count))
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update_countdown)
-        self.timer.start(1000)
+        self.countdown_timer.start(1000)
 
     def update_countdown(self):
         self.count -= 1
         if self.count > 0:
             self.countdown_label.setText(str(self.count))
         else:
-            self.timer.stop()
+            self.countdown_timer.stop()
             self.countdown_label.setText("📷")
             QTimer.singleShot(500, self.take_photo)
 
@@ -66,18 +77,18 @@ class CaptureScreen(QWidget):
             print("⚠️ No session selected.")
             return
 
-        # NEW: Raw photo folder
-        raw_dir = os.path.join(session_path, "raw")
+        # Save photo to raw folder
+        raw_dir = os.path.join(session_path, self.raw_subfolder)
         os.makedirs(raw_dir, exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{timestamp}_photo{self.photo_index + 1}.jpg"
-        full_path = os.path.join(raw_dir, filename)
+        filename = f"{timestamp}_photo{self.photo_index + 1}.{self.format}"
+        photo_path = os.path.join(raw_dir, filename)
 
         try:
-            self.controller.camera.capture(full_path)
-            self.photo_paths.append(full_path)
-            print(f"✅ Photo {self.photo_index + 1} saved to {full_path}")
+            self.controller.camera.capture(photo_path)
+            self.photo_paths.append(photo_path)
+            print(f"✅ Photo {self.photo_index + 1} saved to {photo_path}")
         except Exception as e:
             print(f"❌ Capture failed: {e}")
 
@@ -86,16 +97,14 @@ class CaptureScreen(QWidget):
             QTimer.singleShot(1000, self.begin_countdown)
         else:
             print("🎉 All photos captured.")
-
             self.preview_timer.stop()
 
-            # NEW: Composite folder
-            comps_dir = os.path.join(session_path, "comps")
+            # Composite
+            comps_dir = os.path.join(session_path, self.comp_subfolder)
             os.makedirs(comps_dir, exist_ok=True)
             composite_path = os.path.join(comps_dir, "composite.jpg")
 
-            # Event-local logo file
-            logo_path = os.path.join(session_path, self.controller.config['collage']['logo_filename'])
+            logo_path = os.path.join(session_path, self.controller.config["collage"]["logo_filename"])
 
             generate_collage(
                 self.photo_paths,
@@ -103,6 +112,6 @@ class CaptureScreen(QWidget):
                 logo_path=logo_path,
                 config=self.controller.config.get("collage", {})
             )
-            
+
             self.controller.preview_screen.load_photo(composite_path)
             self.controller.go_to(self.controller.preview_screen)

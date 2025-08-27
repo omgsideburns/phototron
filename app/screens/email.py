@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLa
 from PySide6.QtCore import Qt
 
 class EmailScreen(QWidget):
-    def __init__(self, controller=None):
+    def __init__(self, controller):
         super().__init__()
         self.controller = controller
 

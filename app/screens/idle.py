@@ -1,12 +1,12 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
 
 class IdleScreen(QWidget):
-    def __init__(self, controller=None):
+    def __init__(self, controller):
         super().__init__()
         self.controller = controller
-
         layout = QVBoxLayout()
-        layout.addWidget(QLabel("Idle / Attract Mode"))
+        layout.addWidget(QLabel("Idle / Attract Mode"), alignment=Qt.AlignCenter)
 
         start_button = QPushButton("START")
         start_button.setMinimumHeight(80)

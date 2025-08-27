@@ -1,14 +1,20 @@
-from PIL import Image
+from PIL import Image, ImageDraw
 import os
+from typing import List, Optional
+from app.config import EVENT_BASE_PATH, CONFIG, COLLAGE_CONFIG
 
-def generate_collage(photo_paths, output_path, logo_path=None, config=None):
+def generate_collage(
+    photo_paths: List[str],
+    output_path: str,
+    logo_path: Optional[str] = None,
+    config: Optional[dict] = None
+) -> str:
     if len(photo_paths) != 3:
-        print("🛑 Expected exactly 3 photo paths")
-        raise ValueError("Expected exactly 3 photo paths")
+        raise ValueError("🛑 Expected exactly 3 photo paths, got {}".format(len(photo_paths)))
 
-    config = config or {}
-    canvas_size = tuple(config.get("canvas_size", (2400, 3600)))
-    grid = tuple(config.get("grid", (2, 2)))
+    config = COLLAGE_CONFIG
+    canvas_size = tuple(config.get("canvas_size", (2400, 3600)))  # 4x6 portrait
+    grid = tuple(config.get("grid", (2, 2)))  # default 2x2 grid
 
     collage = Image.new("RGB", canvas_size, "white")
     cell_width = canvas_size[0] // grid[0]
@@ -21,17 +27,24 @@ def generate_collage(photo_paths, output_path, logo_path=None, config=None):
         (cell_width, cell_height)  # Bottom right (logo)
     ]
 
+    # Paste photos
     for i, photo_path in enumerate(photo_paths):
-        img = Image.open(photo_path)
-        img = img.resize((cell_width, cell_height), Image.LANCZOS)
-        collage.paste(img, positions[i])
+        try:
+            img = Image.open(photo_path).convert("RGB")
+            img = img.resize((cell_width, cell_height), Image.LANCZOS)
+            collage.paste(img, positions[i])
+        except Exception as e:
+            print(f"❌ Error loading photo {photo_path}: {e}")
 
+    # Add logo or placeholder
     if logo_path and os.path.exists(logo_path):
-        logo = Image.open(logo_path)
-        logo = logo.resize((cell_width, cell_height), Image.LANCZOS)
-        collage.paste(logo, positions[3])
+        try:
+            logo = Image.open(logo_path).convert("RGB")
+            logo = logo.resize((cell_width, cell_height), Image.LANCZOS)
+            collage.paste(logo, positions[3])
+        except Exception as e:
+            print(f"⚠️ Failed to load logo: {e}")
     else:
-        from PIL import ImageDraw
         draw = ImageDraw.Draw(collage)
         draw.rectangle(
             [positions[3],

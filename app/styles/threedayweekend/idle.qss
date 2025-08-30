@@ -1,4 +1,11 @@
 QWidget {
     background-color: #222;
     color: #eee;
+},
+main_window {
+    background-image: url("{background}");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
 }
+

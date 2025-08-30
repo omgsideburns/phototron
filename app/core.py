@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QStackedWidget
-from app.config import APP_ROOT, CONFIG, LAST_SESSION_FILE, CAMERA_CONFIG, STYLE_CONFIG, STYLE_PATH
+from app.config import APP_ROOT, CONFIG, LAST_SESSION_FILE, CAMERA_CONFIG, STYLE_CONFIG, STYLE_PATH, STYLE_ROOT, EVENT_BASE_PATH
 from app.screens.idle import IdleScreen
 from app.screens.capture import CaptureScreen
 from app.screens.settings import SettingsScreen
@@ -11,59 +11,37 @@ import os
 class AppController:
     def __init__(self):
         self.config = CONFIG
-        self.main_window = QMainWindow()
-        self.stack = QStackedWidget()
-
-        self.main_window.setCentralWidget(self.stack)
-        self.main_window.setWindowTitle("📸 Phototron Photo Booth")
-
         self.current_session_dir = self.load_last_session()
+        self.camera = CameraManager(CAMERA_CONFIG)
 
+        # assign screens
         self.idle_screen = IdleScreen(controller=self)
         self.capture_screen = CaptureScreen(controller=self)
         self.settings_screen = SettingsScreen(controller=self)
         self.email_screen = EmailScreen(controller=self)
         self.preview_screen = PreviewScreen(controller=self)
 
+        # build the stack of pidgies
+        self.stack = QStackedWidget()
         self.stack.addWidget(self.idle_screen)
         self.stack.addWidget(self.capture_screen)
         self.stack.addWidget(self.settings_screen)
         self.stack.addWidget(self.email_screen)
         self.stack.addWidget(self.preview_screen)
-
-        self.apply_stylesheet()
-
         self.stack.setCurrentWidget(self.idle_screen)
 
-        self.camera = CameraManager(CAMERA_CONFIG)
+        self.main_window = QMainWindow()
+        self.main_window.setCentralWidget(self.stack)
+        self.main_window.setWindowTitle("📸 Phototron Photo Booth")
 
-        screen_styles = {
-            self.idle_screen: "idle.qss",
-            self.capture_screen: "capture.qss",
-            self.preview_screen: "preview.qss",
-            self.email_screen: "email.qss",
-            self.settings_screen: "settings.qss",
-        }
-
-        for screen, file_name in screen_styles.items():
-            path = os.path.join(APP_ROOT, STYLE_PATH, file_name)
-            if os.path.exists(path):
-                with open(path, "r") as f:
-                    screen.setStyleSheet(f.read())
-
-    def apply_stylesheet(self):
-        bg_img = STYLE_CONFIG.get("background_image")
-
-        if bg_img:
-            background = os.path.join(APP_ROOT, STYLE_PATH, bg_img)
-            self.main_window.setStyleSheet(f"""
-                QWidget {{
-                    background-image: url("{background}");
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    background-attachment: fixed;
-                }}
-                """)
+        # bring in the selected style..
+        sshFile = os.path.join(STYLE_PATH, "style.qss")
+        with open(sshFile,"r") as f:
+            shh = (
+                f.read()
+                .replace("{{style_path}}", STYLE_PATH)
+            )
+            self.main_window.setStyleSheet(shh)
 
     def widget(self):
         return self.main_window

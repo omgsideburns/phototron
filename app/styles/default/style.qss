@@ -1,8 +1,12 @@
 QWidget {
-
 }
-QMainWidget{
-    background-color: rgba(187, 82, 12, 1);
+QMainWindow{
+    background-image: url("{{style_path}}/background.bmp");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: red;
+
 }
 #StartButton {
         border-radius: 50px; /* Half of desired width/height */
@@ -15,7 +19,7 @@ QMainWidget{
     background-color: rgba(255, 255, 255, 0);
 }
 #IdleScreen {
-    background-color: #520;
+    background-color: rgba(11, 0, 85, 1);
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;

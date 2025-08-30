@@ -1,25 +1,56 @@
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
+from PySide6.QtCore import Qt, QPoint
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QStackedLayout, QSizePolicy
+
+from app.widgets.slideshow import SlideshowWidget
+from app.config import SETTINGS_CONFIG
 
 class IdleScreen(QWidget):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel("Idle / Attract Mode"), alignment=Qt.AlignCenter)
+        self.setMinimumSize(400, 600)    
 
-        start_button = QPushButton("START")
-        start_button.setMinimumHeight(80)
-        start_button.clicked.connect(self.start_pressed)
-        layout.addWidget(start_button)
+        # Slideshow..
+        self.slideshow = SlideshowWidget(self)
+        ssw = self.width()
+        ssh = self.height()
+        print(ssw, ssh)
+        def calculate_dimensions(container_width, container_height):
+            ratio = 3 / 2
+            height = container_height
+            width = container_height / ratio
+            return width, height
+        w, h = calculate_dimensions(ssw, ssh)
+        print(w,h)
+        self.slideshow.setFixedSize(w, h)
+        
 
-        settings_button = QPushButton("Settings")
-        settings_button.setMinimumHeight(60)
-        settings_button.clicked.connect(self.open_settings)
-        layout.addWidget(settings_button)
+        # Start button..
+        self.start_button = QPushButton("START")
+        self.start_button.setObjectName("StartButton")
+        self.start_button.setFixedSize(360,30)
+        self.start_button.clicked.connect(self.start_pressed)
 
-        self.setLayout(layout)
+        # Settings button..
+        self.settings_button = QPushButton("")
+        self.settings_button.setObjectName("SettingsButton")
+        self.settings_button.setFixedSize(50,50)
+        self.settings_button.setParent(self)
+        self.settings_button.move(0,0)
+        self.settings_button.raise_()
+        self.settings_button.clicked.connect(self.open_settings)
 
+        # Build overlay layout
+        self.overlay_layout = QVBoxLayout()
+
+        # Final layout
+        main_layout = QVBoxLayout(self)
+        main_layout.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(self.slideshow, stretch=1)
+        main_layout.addWidget(self.start_button)
+        self.setLayout(main_layout)
+
+# Define the button actions
     def start_pressed(self):
         print("START pressed")
         self.controller.capture_screen.start_sequence()
@@ -28,3 +59,17 @@ class IdleScreen(QWidget):
     def open_settings(self):
         print("Opening Settings")
         self.controller.go_to(self.controller.settings_screen)
+
+    def resizeEvent(self, event):
+            super().resizeEvent(None)
+            ssw = self.width()
+            ssh = self.height()
+            print(ssw, ssh)
+            def calculate_dimensions(container_width, container_height):
+                ratio = 3 / 2
+                height = container_height
+                width = container_height / ratio
+                return width, height
+            w, h = calculate_dimensions(ssw, ssh)
+            print(w,h)
+            self.slideshow.setFixedSize(w, h)

@@ -1,9 +1,3 @@
-from pathlib import Path
-
-lights_py = Path("lights.py")
-readme_md = Path("LIGHT_ANIMATIONS.md")
-
-lights_py.write_text("""\
 import time
 import random
 import board
@@ -151,41 +145,3 @@ class LightController:
     def cleanup(self):
         if self.flash_enabled:
             GPIO.cleanup()
-""")
-
-readme_md.write_text("""\
-# 💡 Phototron Light Animations
-
-All animations live in `lights.py` under the `LightController` class. You can call them like this:
-
-```python
-from app.lights import LightController
-
-lights = LightController()
-lights.animate_party_mode()
-```
-
----
-
-## ✨ Animation Reference
-
-| Method | Description |
-|--------|-------------|
-| `flash_on()` | Turns the relay flash ON |
-| `flash_off()` | Turns the relay flash OFF |
-| `flash_burst(duration=0.25)` | Turns flash ON briefly, then OFF |
-| `animate_flash_ring()` | Quick white ring flash |
-| `animate_rainbow_cycle(wait=0.01, cycles=1)` | Continuous rainbow animation |
-| `animate_breathing(color, steps, pause, cycles)` | Fades in/out like breathing |
-| `animate_police_strobe(flashes=5, delay=0.1)` | Red/Yellow strobe alert |
-| `animate_theater_chase(color, delay, cycles)` | Marching lights theater style |
-| `animate_twinkle(color, count, delay)` | Random sparkles |
-| `animate_party_mode(flashes, delay)` | Colorful chaotic blinking |
-| `set_error()` | Solid red |
-| `set_idle()` | Dim blue idle glow |
-| `cleanup()` | Call before shutdown to clean GPIO |
-
-You can change default colors, counts, and delays in `LIGHTS_CONFIG` from your config file.
-""")
-
-"✅ lights.py and LIGHT_ANIMATIONS.md generated!"

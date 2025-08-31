@@ -56,21 +56,31 @@ class CameraManager:
 
         try:
             frame = self.picam.capture_array("main")
+
             if frame is None:
                 return None
 
-            # Convert BGR to RGB and make sure it's contiguous
-            frame = frame[:, :, ::-1]
             frame = np.ascontiguousarray(frame)
-            
-#debug
-            print("Frame dtype:", frame.dtype)
-            print("Frame shape:", frame.shape)
 
-            height, width, channel = frame.shape
-            bytes_per_line = 3 * width
-            image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
-            return image
+            if frame.shape[2] == 3:
+                # 3-channel image: assume BGR, convert to RGB
+                frame = frame[:, :, ::-1]
+                height, width, _ = frame.shape
+                bytes_per_line = 3 * width
+                image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+                return image
+
+            elif frame.shape[2] == 4:
+                # 4-channel image: assume BGRA, convert to RGBA
+                frame = frame[:, :, [2, 1, 0, 3]]  # Swap BGR → RGB, keep A
+                height, width, _ = frame.shape
+                bytes_per_line = 4 * width
+                image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGBA8888)
+                return image
+
+            else:
+                print(f"⚠️ Unsupported channel count: {frame.shape[2]}")
+                return None
         except Exception as e:
             print(f"⚠️ Preview frame error: {e}")
             return None

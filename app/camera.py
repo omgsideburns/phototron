@@ -11,8 +11,7 @@ from PySide6.QtCore import Qt
 ON_PI = platform.system() == "Linux" and "aarch64" in platform.machine()
 
 if ON_PI:
-    from picamera2 import Picamera2, Preview
-    from libcamera import Transform
+    from picamera2 import Picamera2, Preview, Transform
 else:
     Picamera2 = None
     Preview = None

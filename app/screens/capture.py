@@ -62,6 +62,8 @@ class CaptureScreen(QWidget):
 
         session_path = self.controller.current_session_dir
         raw_dir = os.path.join(session_path, self.raw_subfolder)
+        print("raw_dir: ", raw_dir)               # debugging for multiple os path errors
+        print("session_path: ", session_path)   # debugging for multiple os path errors
         self.capture_session_id = self.get_next_capture_session_id(raw_dir)
 
         self.controller.camera.start_camera()

@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPixmap
 from datetime import datetime
 import os
+import re
 
 from app.collage import generate_collage
 from app.config import PHOTO_CONFIG
@@ -41,13 +42,30 @@ class CaptureScreen(QWidget):
         self.countdown_timer = QTimer(self)
         self.countdown_timer.timeout.connect(self.update_countdown)
 
+    def get_next_capture_session_id(self, raw_dir):
+        os.makedirs(raw_dir, exist_ok=True)
+        existing_files = os.listdir(raw_dir)
+        session_numbers = []
+
+        for fname in existing_files:
+            match = re.match(r"^(\d{4})-\d{2}\.\w+$", fname)
+            if match:
+                session_numbers.append(int(match.group(1)))
+
+        next_id = max(session_numbers, default=0) + 1
+        return f"{next_id:04d}"
+
     def start_sequence(self):
         self.photo_index = 0
         self.photo_paths = []
         self.preview_label.setText("📸 Warming up camera...")
 
+        session_path = self.controller.current_session_dir
+        raw_dir = os.path.join(session_path, self.raw_subfolder)
+        self.capture_session_id = self.get_next_capture_session_id(raw_dir)
+
         self.controller.camera.start_camera()
-        self.preview_timer.start(50)  # Roughly 20 FPS
+        self.preview_timer.start(50)  # ~20 FPS
 
         QTimer.singleShot(2000, self.begin_countdown)
 
@@ -77,18 +95,17 @@ class CaptureScreen(QWidget):
             print("⚠️ No session selected.")
             return
 
-        # Save photo to raw folder
         raw_dir = os.path.join(session_path, self.raw_subfolder)
         os.makedirs(raw_dir, exist_ok=True)
 
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{timestamp}_photo{self.photo_index + 1}.{self.format}"
+        photo_num = self.photo_index + 1
+        filename = f"{self.capture_session_id}-{photo_num:02d}.{self.format}"
         photo_path = os.path.join(raw_dir, filename)
 
         try:
             self.controller.camera.capture(photo_path)
             self.photo_paths.append(photo_path)
-            print(f"✅ Photo {self.photo_index + 1} saved to {photo_path}")
+            print(f"✅ Photo {photo_num} saved to {photo_path}")
         except Exception as e:
             print(f"❌ Capture failed: {e}")
 
@@ -102,7 +119,7 @@ class CaptureScreen(QWidget):
             # Composite
             comps_dir = os.path.join(session_path, self.comp_subfolder)
             os.makedirs(comps_dir, exist_ok=True)
-            composite_path = os.path.join(comps_dir, "composite.jpg")
+            composite_path = os.path.join(comps_dir, f"{self.capture_session_id}-composite.jpg")
 
             logo_path = os.path.join(session_path, self.controller.config["collage"]["logo_filename"])
 

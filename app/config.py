@@ -7,7 +7,7 @@ APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Config paths
 DEFAULT_CONFIG_PATH = os.path.join(APP_ROOT, "app/config.cfg")
-USER_CONFIG_PATH = os.path.join(APP_ROOT, "user_config.cfg")
+USER_CONFIG_PATH = os.path.join(APP_ROOT, "app/user_config.cfg")
 
 # Use user config if it exists; otherwise, copy default to create it
 if not os.path.exists(USER_CONFIG_PATH):

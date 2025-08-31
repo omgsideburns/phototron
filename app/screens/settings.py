@@ -165,7 +165,12 @@ class SettingsScreen(QWidget):
                 merged_config[section] = {}
             for key, widget in keys.items():
                 if isinstance(widget, QLineEdit):
-                    merged_config[section][key] = widget.text()
+                    text = widget.text().strip()
+                    try:
+                        value = float(text)
+                        merged_config[section][key] = value
+                    except ValueError:
+                        merged_config[section][key] = widget.text()
                 elif isinstance(widget, QCheckBox):
                     merged_config[section][key] = widget.isChecked()
                 elif isinstance(widget, QComboBox):

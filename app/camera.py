@@ -8,7 +8,7 @@ from PySide6.QtGui import QImage, QColor
 from PySide6.QtCore import Qt
 
 # Detect whether we’re on a Raspberry Pi
-ON_PI = platform.system() == "Linux" and "arm" in platform.machine()
+ON_PI = platform.system() == "Linux" and "aarch64" in platform.machine()
 
 if ON_PI:
     from picamera2 import Picamera2, Preview

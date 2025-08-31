@@ -15,6 +15,7 @@ class AppController:
         print("current_session_dir: ", self.current_session_dir)
         self.camera = CameraManager(CAMERA_CONFIG)
 
+
         # assign screens
         self.idle_screen = IdleScreen(controller=self)
         self.capture_screen = CaptureScreen(controller=self)

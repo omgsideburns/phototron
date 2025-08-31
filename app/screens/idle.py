@@ -14,14 +14,12 @@ class IdleScreen(QWidget):
         self.slideshow = SlideshowWidget(self)
         ssw = self.width()
         ssh = self.height()
-        print(ssw, ssh)
         def calculate_dimensions(container_width, container_height):
             ratio = 3 / 2
             height = container_height
             width = container_height / ratio
             return width, height
         w, h = calculate_dimensions(ssw, ssh)
-        print(w,h)
         self.slideshow.setFixedSize(w, h)
         
 
@@ -64,12 +62,10 @@ class IdleScreen(QWidget):
             super().resizeEvent(None)
             ssw = self.width()
             ssh = self.height()
-            print(ssw, ssh)
             def calculate_dimensions(container_width, container_height):
                 ratio = 3 / 2
                 height = container_height
                 width = container_height / ratio
                 return width, height
             w, h = calculate_dimensions(ssw, ssh)
-            print(w,h)
             self.slideshow.setFixedSize(w, h)

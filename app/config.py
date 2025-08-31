@@ -40,6 +40,10 @@ EVENT_LOADED = os.path.join(APP_ROOT, SETTINGS_CONFIG.get("current_event", "defa
 STYLE_ROOT = os.path.join(APP_ROOT, STYLE_CONFIG.get("style_path", "app/styles"))
 STYLE_PATH = os.path.join(APP_ROOT, STYLE_CONFIG.get("style_path", "app/styles"), STYLE_CONFIG.get("style_dir", "default"))
 
+print("APP_ROOT: ", APP_ROOT)
+print("EVENT_BASE_PATH: ", EVENT_BASE_PATH)
+print("EVENT_LOADED: ", EVENT_LOADED)
+
 EVENT_COMPS = os.path.join(APP_ROOT, SETTINGS_CONFIG.get("base_event_path", "events"), SETTINGS_CONFIG.get("event_loaded", "default"), PHOTO_CONFIG.get("composite_path", "comps"))
 
 # DEBUG

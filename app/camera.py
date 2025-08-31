@@ -63,9 +63,9 @@ class CameraManager:
             # frame = frame[:, :, ::-1]
             # frame = np.ascontiguousarray(frame)
 
-            height, width, channel = frame.shape
-            bytes_per_line = 3 * width
-            image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+            # height, width, channel = frame.shape
+            # bytes_per_line = 3 * width
+            image = QImage(frame)
             return image
         except Exception as e:
             print(f"⚠️ Preview frame error: {e}")

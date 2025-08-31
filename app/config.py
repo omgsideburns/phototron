@@ -17,7 +17,7 @@ if not os.path.exists(USER_CONFIG_PATH):
 with open(USER_CONFIG_PATH, "rb") as f:
     CONFIG = tomllib.load(f)
 
-# Core paths
+# LAST_SESSION_FILE deprecated, now using "event_loaded" var in config.
 LAST_SESSION_FILE = os.path.join(APP_ROOT, "last_session.txt")
 
 # Section references
@@ -36,13 +36,9 @@ LIGHTS_CONFIG     = CONFIG.get("lights", {})
 
 # Derived paths
 EVENT_BASE_PATH = os.path.join(APP_ROOT, SETTINGS_CONFIG.get("base_event_path", "events"))
-EVENT_LOADED = os.path.join(APP_ROOT, SETTINGS_CONFIG.get("current_event", "default"))
+EVENT_LOADED = os.path.join(EVENT_BASE_PATH, SETTINGS_CONFIG.get("current_event", "default"))
 STYLE_ROOT = os.path.join(APP_ROOT, STYLE_CONFIG.get("style_path", "app/styles"))
 STYLE_PATH = os.path.join(APP_ROOT, STYLE_CONFIG.get("style_path", "app/styles"), STYLE_CONFIG.get("style_dir", "default"))
-
-print("config.py: APP_ROOT: ", APP_ROOT)
-print("config.py: EVENT_BASE_PATH: ", EVENT_BASE_PATH)
-print("config.py: EVENT_LOADED: ", EVENT_LOADED)
 
 EVENT_COMPS = os.path.join(APP_ROOT, SETTINGS_CONFIG.get("base_event_path", "events"), SETTINGS_CONFIG.get("event_loaded", "default"), PHOTO_CONFIG.get("composite_path", "comps"))
 

@@ -1,26 +1,25 @@
-# Node.js dependencies
-node_modules/
+# Keep intentionally empty directories
+!.gitkeep
 
 # Ignore Venv
 venv
 
-# macOS system files
+# Keep default generated folders for some reason..
+!events/default/
+!events/default/raw/
+!events/default/comps/
+
+##################################
+### Ignore all generated files ###
+##################################
+
+# macOS system files (macos loves to leave messes...)
 .DS_Store
-
-# Cache
 *__pycache__*
-
-# Optional build artifacts
-dist/
-build/
-
-# Keep intentionally empty directories
-!.gitkeep
-
-# ignore test photos
-*events/
-*raw/
-*comp/
-
-# ignore user_config... HEY TONY make sure you don't have passwords in the main config while testing..
 user_config.cfg
+# don't sync testing contents
+events/test*
+events/default/raw/*
+events/default/comps/*
+
+

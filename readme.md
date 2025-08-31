@@ -12,7 +12,9 @@ I am rebooting this specifically for Pi's at the moment because I'm in a time cr
 
 Under development again but not working yet...
 
-Currently building for Pi 4 or Pi 5.. 
+I will push gits WAY too many times when I'm doing tests on a pi.  It's just so much easier to `git pull` updates rather than trying to transfer them directly between devices. 
+
+Currently building in macos for Pi 4 or Pi 5.. hopefully will add crossplatform compatibility for funsies..
 
 ---
 

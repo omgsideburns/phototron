@@ -6,7 +6,7 @@ import os
 import re
 
 from app.collage import generate_collage
-from app.config import PHOTO_CONFIG
+from app.config import PHOTO_CONFIG, EVENT_LOADED, EVENT_BASE_PATH
 
 class CaptureScreen(QWidget):
     def __init__(self, controller):
@@ -60,9 +60,9 @@ class CaptureScreen(QWidget):
         return f"{next_id:04d}"
 
     def prepare_capture_paths(self):
-        session_path = self.controller.current_session_dir
+        session_path = EVENT_LOADED
         if not session_path:
-            print("⚠️ No session selected.")
+            print("⚠️ No event selected.")
             return False
 
         self.raw_dir = os.path.join(session_path, self.raw_subfolder)

@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QStackedWidget
-from app.config import APP_ROOT, CONFIG, LAST_SESSION_FILE, CAMERA_CONFIG, STYLE_CONFIG, STYLE_PATH, STYLE_ROOT, EVENT_BASE_PATH
+from app.config import APP_ROOT, CONFIG, LAST_SESSION_FILE, CAMERA_CONFIG, STYLE_CONFIG, STYLE_PATH, STYLE_ROOT, EVENT_BASE_PATH, EVENT_LOADED
 from app.screens.idle import IdleScreen
 from app.screens.capture import CaptureScreen
 from app.screens.settings import SettingsScreen
@@ -11,12 +11,13 @@ import os
 class AppController:
     def __init__(self):
         self.config = CONFIG
-        self.current_session_dir = self.load_last_session()
+        # self.current_session_dir = self.load_last_session()  # DEPRECATED - delete me soon, just make sure nothing breaks first..
         self.camera = CameraManager(CAMERA_CONFIG)
 
         #debugging some more...
-        print("core.py: current_session_dir: ", self.current_session_dir)
+        #print("core.py: current_session_dir: ", self.current_session_dir)
         print("core.py: last_session_path_logic", os.path.join(APP_ROOT, "last_session.txt"))
+        print("core.py: EVENT_LOADED: ", EVENT_LOADED)
 
         # assign screens
         self.idle_screen = IdleScreen(controller=self)
@@ -53,17 +54,47 @@ class AppController:
     def go_to(self, screen):
         self.stack.setCurrentWidget(screen)
 
-    def load_last_session(self):
-        try:
-            with open(LAST_SESSION_FILE, "r") as f:
-                path = f.read().strip()
-                if os.path.exists(path):
-                    return path
-        except FileNotFoundError:
-            pass
-        return None
 
-    def save_last_session(self, path):
+    # This confirms that the EVENT_LOADED exists, if not, build.
+    def load_last_session(self):
+        if not os.path.exists(EVENT_LOADED):
+            print("No Session Path Found", EVENT_LOADED)
+        else:
+            print("Event Loaded: ", EVENT_LOADED)
+        return None
+    
+    def load_last_session(self):
+        if not os.path.exists(EVENT_LOADED):
+            print("No session path found:", EVENT_LOADED)
+            try:
+                os.makedirs(EVENT_LOADED, exist_ok=True)
+                print("Created missing event directory:", EVENT_LOADED)
+            except Exception as e:
+                print("Failed to create event directory:", e)
+        else:
+            print("Event loaded:", EVENT_LOADED)
+
+
+    # this isn't used for anything.. was just a test.. delete soon
+    def load_session(self):
+        session_name = EVENT_LOADED
+        session_path = EVENT_BASE_PATH
+
+        if not os.path.exists(session_path):
+            os.makedirs(session_path)
+            print(f"[INFO] Created session directory: {session_path}")
+        else:
+            print(f"[INFO] Loaded existing session directory: {session_path}")
+
+        return session_path
+
+    # this is deprecated, remove once I know it's not called somewhere else..
+    # previously used last_session.txt to remember event directories
+    # "session" now describes a users photo session
+    # "event" describes the entire group of sessions..
+    # example event="halloween part" and sessions are all the times someone hits start on the photo booth.
+    # add explanations for all of this in the readme.md
+    def save_last_session(self, path):            
         with open(LAST_SESSION_FILE, "w") as f:
             f.write(path)
         self.current_session_dir = path

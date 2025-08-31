@@ -7,7 +7,7 @@ import numpy as np
 from PySide6.QtGui import QImage, QColor
 from PySide6.QtCore import Qt
 
-# Detect whether we’re on a Raspberry Pi
+# Detect whether we’re on a Raspberry Pi.. only tested on a 5 
 ON_PI = platform.system() == "Linux" and "aarch64" in platform.machine()
 
 if ON_PI:
@@ -27,7 +27,7 @@ class CameraManager:
 
     def start_camera(self):
         if not ON_PI:
-            print("📷 Running in mock mode — camera disabled.")
+            print("Running in mock mode — camera not enabled.")
             return
 
         if self.picam is None:
@@ -60,8 +60,8 @@ class CameraManager:
                 return None
 
             # Convert BGR to RGB and make sure it's contiguous
-            frame = frame[:, :, ::-1]
-            frame = np.ascontiguousarray(frame)
+            # frame = frame[:, :, ::-1]
+            # frame = np.ascontiguousarray(frame)
 
             height, width, channel = frame.shape
             bytes_per_line = 3 * width

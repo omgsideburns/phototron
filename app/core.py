@@ -11,13 +11,7 @@ import os
 class AppController:
     def __init__(self):
         self.config = CONFIG
-        # self.current_session_dir = self.load_last_session()  # DEPRECATED - delete me soon, just make sure nothing breaks first..
         self.camera = CameraManager(CAMERA_CONFIG)
-
-        #debugging some more...
-        #print("core.py: current_session_dir: ", self.current_session_dir)
-        print("core.py: last_session_path_logic", os.path.join(APP_ROOT, "last_session.txt"))
-        print("core.py: EVENT_LOADED: ", EVENT_LOADED)
 
         # assign screens
         self.idle_screen = IdleScreen(controller=self)
@@ -55,7 +49,7 @@ class AppController:
         self.stack.setCurrentWidget(screen)
 
 
-    # This confirms that the EVENT_LOADED exists, if not, build.
+    # This confirms that the EVENT_LOADED dir exists, if not, build.
     def load_last_session(self):
         if not os.path.exists(EVENT_LOADED):
             print("No Session Path Found", EVENT_LOADED)
@@ -74,27 +68,8 @@ class AppController:
         else:
             print("Event loaded:", EVENT_LOADED)
 
-
-    # this isn't used for anything.. was just a test.. delete soon
-    def load_session(self):
-        session_name = EVENT_LOADED
-        session_path = EVENT_BASE_PATH
-
-        if not os.path.exists(session_path):
-            os.makedirs(session_path)
-            print(f"[INFO] Created session directory: {session_path}")
-        else:
-            print(f"[INFO] Loaded existing session directory: {session_path}")
-
-        return session_path
-
-    # this is deprecated, remove once I know it's not called somewhere else..
     # previously used last_session.txt to remember event directories
     # "session" now describes a users photo session
     # "event" describes the entire group of sessions..
     # example event="halloween part" and sessions are all the times someone hits start on the photo booth.
     # add explanations for all of this in the readme.md
-    def save_last_session(self, path):            
-        with open(LAST_SESSION_FILE, "w") as f:
-            f.write(path)
-        self.current_session_dir = path

@@ -8,6 +8,7 @@ import sys
 os.chdir(APP_ROOT)
 
 app = QApplication(sys.argv)
+app.setStyle("Fusion"). # adding this forces macos to render more like the raspi does.. good for setting styles
 controller = AppController()
 controller.widget().resize(800, 600)
 controller.widget().show()  # or .showFullScreen()

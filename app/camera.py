@@ -56,27 +56,25 @@ class CameraManager:
 
         try:
             frame = self.picam.capture_array("main")
-
             if frame is None:
                 return None
 
-            frame = np.ascontiguousarray(frame)
-
+            # Don't call ascontiguousarray yet — do it after reordering
             if frame.shape[2] == 3:
-                # 3-channel image: assume BGR, convert to RGB
+                # Convert BGR to RGB
                 frame = frame[:, :, ::-1]
+                frame = np.ascontiguousarray(frame)
                 height, width, _ = frame.shape
                 bytes_per_line = 3 * width
-                image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
-                return image
+                return QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
 
             elif frame.shape[2] == 4:
-                # 4-channel image: assume BGRA, convert to RGBA
-                frame = frame[:, :, [2, 1, 0, 3]]  # Swap BGR → RGB, keep A
+                # Convert BGRA to RGBA
+                frame = frame[:, :, [2, 1, 0, 3]]
+                frame = np.ascontiguousarray(frame)
                 height, width, _ = frame.shape
                 bytes_per_line = 4 * width
-                image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGBA8888)
-                return image
+                return QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGBA8888)
 
             else:
                 print(f"⚠️ Unsupported channel count: {frame.shape[2]}")

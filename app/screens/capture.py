@@ -21,6 +21,11 @@ class CaptureScreen(QWidget):
         self.raw_subfolder = PHOTO_CONFIG.get("raw_path", "raw")
         self.comp_subfolder = PHOTO_CONFIG.get("composite_path", "comps")
 
+        self.raw_dir = None
+        self.comps_dir = None
+        self.capture_session_id = None
+        self.logo_path = None
+
         # Layout
         layout = QVBoxLayout()
 
@@ -43,7 +48,6 @@ class CaptureScreen(QWidget):
         self.countdown_timer.timeout.connect(self.update_countdown)
 
     def get_next_capture_session_id(self, raw_dir):
-        os.makedirs(raw_dir, exist_ok=True)
         existing_files = os.listdir(raw_dir)
         session_numbers = []
 
@@ -55,16 +59,37 @@ class CaptureScreen(QWidget):
         next_id = max(session_numbers, default=0) + 1
         return f"{next_id:04d}"
 
+    def prepare_capture_paths(self):
+        session_path = self.controller.current_session_dir
+        if not session_path:
+            print("⚠️ No session selected.")
+            return False
+
+        self.raw_dir = os.path.join(session_path, self.raw_subfolder)
+        os.makedirs(self.raw_dir, exist_ok=True)
+
+        self.comps_dir = os.path.join(session_path, self.comp_subfolder)
+        os.makedirs(self.comps_dir, exist_ok=True)
+
+        self.capture_session_id = self.get_next_capture_session_id(self.raw_dir)
+
+        self.logo_path = os.path.join(
+            session_path, self.controller.config["collage"]["logo_filename"]
+        )
+
+        print(f"📁 Prepared session {self.capture_session_id}")
+        print("Raw path:", self.raw_dir)
+        print("Comps path:", self.comps_dir)
+        print("Logo path:", self.logo_path)
+        return True
+
     def start_sequence(self):
         self.photo_index = 0
         self.photo_paths = []
         self.preview_label.setText("📸 Warming up camera...")
 
-        session_path = self.controller.current_session_dir
-        raw_dir = os.path.join(session_path, self.raw_subfolder)
-        print("raw_dir: ", raw_dir)               # debugging for multiple os path errors
-        print("session_path: ", session_path)   # debugging for multiple os path errors
-        self.capture_session_id = self.get_next_capture_session_id(raw_dir)
+        if not self.prepare_capture_paths():
+            return
 
         self.controller.camera.start_camera()
         self.preview_timer.start(50)  # ~20 FPS
@@ -92,17 +117,9 @@ class CaptureScreen(QWidget):
             QTimer.singleShot(500, self.take_photo)
 
     def take_photo(self):
-        session_path = self.controller.current_session_dir
-        if not session_path:
-            print("⚠️ No session selected.")
-            return
-
-        raw_dir = os.path.join(session_path, self.raw_subfolder)
-        os.makedirs(raw_dir, exist_ok=True)
-
         photo_num = self.photo_index + 1
         filename = f"{self.capture_session_id}-{photo_num:02d}.{self.format}"
-        photo_path = os.path.join(raw_dir, filename)
+        photo_path = os.path.join(self.raw_dir, filename)
 
         try:
             self.controller.camera.capture(photo_path)
@@ -118,17 +135,12 @@ class CaptureScreen(QWidget):
             print("🎉 All photos captured.")
             self.preview_timer.stop()
 
-            # Composite
-            comps_dir = os.path.join(session_path, self.comp_subfolder)
-            os.makedirs(comps_dir, exist_ok=True)
-            composite_path = os.path.join(comps_dir, f"{self.capture_session_id}-composite.jpg")
-
-            logo_path = os.path.join(session_path, self.controller.config["collage"]["logo_filename"])
+            composite_path = os.path.join(self.comps_dir, f"{self.capture_session_id}-composite.jpg")
 
             generate_collage(
                 self.photo_paths,
                 composite_path,
-                logo_path=logo_path,
+                logo_path=self.logo_path,
                 config=self.controller.config.get("collage", {})
             )
 

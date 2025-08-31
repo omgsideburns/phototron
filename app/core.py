@@ -12,9 +12,11 @@ class AppController:
     def __init__(self):
         self.config = CONFIG
         self.current_session_dir = self.load_last_session()
-        print("current_session_dir: ", self.current_session_dir)
         self.camera = CameraManager(CAMERA_CONFIG)
 
+        #debugging some more...
+        print("core.py: current_session_dir: ", self.current_session_dir)
+        print("core.py: last_session_path_logic", os.path.join(APP_ROOT, "last_session.txt"))
 
         # assign screens
         self.idle_screen = IdleScreen(controller=self)

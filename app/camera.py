@@ -60,12 +60,16 @@ class CameraManager:
                 return None
 
             # Convert BGR to RGB and make sure it's contiguous
-            # frame = frame[:, :, ::-1]
-            # frame = np.ascontiguousarray(frame)
+            frame = frame[:, :, ::-1]
+            frame = np.ascontiguousarray(frame)
+            
+#debug
+            print("Frame dtype:", frame.dtype)
+            print("Frame shape:", frame.shape)
 
-            # height, width, channel = frame.shape
-            # bytes_per_line = 3 * width
-            image = QImage(frame)
+            height, width, channel = frame.shape
+            bytes_per_line = 3 * width
+            image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
             return image
         except Exception as e:
             print(f"⚠️ Preview frame error: {e}")

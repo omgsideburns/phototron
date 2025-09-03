@@ -59,6 +59,7 @@ class CameraManager:
             if frame is None:
                 return None
 
+            # Check for frame shape... 3 or 4 width..
             # Don't call ascontiguousarray yet — do it after reordering
             if frame.shape[2] == 3:
                 # Convert BGR to RGB

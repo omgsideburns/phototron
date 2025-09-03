@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
 from PySide6.QtCore import Qt
 from app.widgets.slideshow import SlideshowWidget
 from app.config import SETTINGS_CONFIG
-
+import lights
 
 class IdleScreenUI(QWidget):
     def __init__(self):
@@ -33,6 +33,8 @@ class IdleScreenLogic:
     def __init__(self, ui: IdleScreenUI, controller):
         self.ui = ui
         self.controller = controller
+        lights.idle_a
+        lights.idle_b
 
         self.ui.start_button.clicked.connect(self.start_pressed)
         self.ui.settings_button.clicked.connect(self.open_settings)          

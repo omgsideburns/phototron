@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QStacke
 
 from app.widgets.slideshow import SlideshowWidget
 from app.config import SETTINGS_CONFIG
+import lights
 
 class IdleScreen(QWidget):
     def __init__(self, controller):
@@ -21,7 +22,6 @@ class IdleScreen(QWidget):
             return width, height
         w, h = calculate_dimensions(ssw, ssh)
         self.slideshow.setFixedSize(w, h)
-        
 
         # Start button..
         self.start_button = QPushButton("START")
@@ -47,6 +47,9 @@ class IdleScreen(QWidget):
         main_layout.addWidget(self.slideshow, stretch=1)
         main_layout.addWidget(self.start_button)
         self.setLayout(main_layout)
+
+        # initiate lights
+        lights.idle()
 
 # Define the button actions
     def start_pressed(self):

@@ -120,8 +120,8 @@ class SettingsScreen(QWidget):
         save_button.clicked.connect(self.save_and_restart)
         back_button = QPushButton("⬅️ Back")
         back_button.clicked.connect(self.go_back)
-        button_layout.addWidget(save_button)
         button_layout.addWidget(back_button)
+        button_layout.addWidget(save_button)
         main_layout.addLayout(button_layout)
 
         self.setLayout(main_layout)

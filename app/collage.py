@@ -31,10 +31,10 @@ def generate_collage(
     cell_height = canvas_size[1] // grid[1]
 
     positions = [
-        (0, 0),                      # Top left
-        (cell_width, 0),             # Top right
-        (0, cell_height),            # Bottom left
-        (cell_width, cell_height),   # Bottom right (logo)
+        (0, 0),  # Top left
+        (cell_width, 0),  # Top right
+        (0, cell_height),  # Bottom left
+        (cell_width, cell_height),  # Bottom right (logo)
     ]
 
     # Paste photos

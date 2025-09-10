@@ -142,9 +142,9 @@ class CaptureScreen(QWidget):
             composite_path = self.comps_dir / f"{self.capture_session_id}-composite.jpg"
 
             generate_collage(
-                self.photo_paths,            # list[Path]
-                composite_path,              # Path
-                logo_path=self.logo_path,    # Path | None
+                self.photo_paths,  # list[Path]
+                composite_path,  # Path
+                logo_path=self.logo_path,  # Path | None
                 config=self.controller.config.get("collage", {}),
             )
 

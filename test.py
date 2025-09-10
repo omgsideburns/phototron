@@ -1,11 +1,14 @@
 # test.py
-
-import os
-from app.config import CONFIG, STYLE_PATH, STYLE_ROOT, EVENT_BASE_PATH
-from app.live_config import save_user_config
+from pathlib import Path
 import tomllib
 
-APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+from app.config import (
+    APP_ROOT,  
+    CONFIG,
+    STYLE_PATH,
+    STYLE_ROOT,
+    EVENT_BASE_PATH,
+)
 
 print("🛠 CONFIG PATHS")
 print(f"APP_ROOT:        {APP_ROOT}")
@@ -23,12 +26,14 @@ for section, settings in CONFIG.items():
     else:
         print(f"{section} = {settings}")
     print()
+
 print("📘 EDITABLE KEYS")
-editable_keys_path = os.path.join(APP_ROOT, "app/editable_keys.cfg")
-if not os.path.exists(editable_keys_path):
+editable_keys_path = APP_ROOT / "app" / "editable_keys.cfg"
+
+if not editable_keys_path.exists():
     print("❌ editable_keys.cfg not found.")
 else:
-    with open(editable_keys_path, "rb") as f:
+    with editable_keys_path.open("rb") as f:
         editable = tomllib.load(f)
 
     for section, keys in editable.items():

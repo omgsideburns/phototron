@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import platform
 import time
 import numpy as np
@@ -47,7 +47,7 @@ class CameraManager:
     def get_qt_preview_frame(self):
         if not ON_PI:
             # Return dummy frame (gray box) on macOS
-            dummy = QImage(640, 480, QImage.Format_RGB32)
+            dummy = QImage(480, 640, QImage.Format_RGB32)
             dummy.fill(QColor("darkgray"))
             return dummy
 
@@ -88,10 +88,10 @@ class CameraManager:
         if not ON_PI:
             # Simulate camera capture on macOS
             from PIL import Image, ImageDraw
-            img = Image.new("RGB", (640, 480), color=(100, 100, 100))
+            img = Image.new("RGB", (480, 640), color=(100, 100, 100))
             draw = ImageDraw.Draw(img)
             draw.text((10, 10), "Simulated Image", fill=(255, 255, 255))
-            filepath = os.path.abspath(filename)
+            filepath = Path(filename).resolve()
             img.save(filepath)
             print(f"📸 Simulated photo saved to {filepath}")
             return filepath
@@ -99,7 +99,7 @@ class CameraManager:
         if not self.preview_started:
             self.start_camera()
 
-        filepath = os.path.abspath(filename)
+        filepath = Path(filename).resolve()
         self.picam.capture_file(filepath)
         return filepath
 

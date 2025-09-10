@@ -1,16 +1,30 @@
-from PySide6.QtCore import Qt, QFile, QTextStream
-from PySide6.QtWidgets import QApplication
-from app.config import APP_ROOT
-from app.core import AppController
-import os
 import sys
+from PySide6.QtWidgets import QApplication, QStyleFactory
+from PySide6.QtCore import Qt
+from app.config import APP_ROOT  # this is a Path object in your refactor
+from app.core import AppController
 
-os.chdir(APP_ROOT)
+def choose_style():
+    # Prefer native on macOS, otherwise Fusion everywhere (including Windows/Linux)
+    available = {s.lower(): s for s in QStyleFactory.keys()}
+    if sys.platform == "darwin" and "macos" in available:
+        return available["macos"]
+    return available.get("fusion")
 
-app = QApplication(sys.argv)
-app.setStyle("macOS") # adding this forces macos to render more like the raspi does.. good for setting styles
-controller = AppController()
-controller.widget().resize(800, 600)
-controller.widget().show()  # or .showFullScreen()
-sys.exit(app.exec())
+def main():
+    app = QApplication(sys.argv)
 
+    # Set a safe style
+    style = choose_style()
+    if style:
+        app.setStyle(style)
+
+    controller = AppController()
+    win = controller.widget()
+    win.resize(480, 640)
+    win.show()  # or win.showFullScreen()
+
+    sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()

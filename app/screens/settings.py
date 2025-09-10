@@ -1,16 +1,18 @@
+from pathlib import Path
+from functools import partial
+import copy
+import sys
+import tomllib
+
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QDoubleValidator
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QCheckBox,
     QTextEdit, QComboBox, QPushButton, QMessageBox, QScrollArea, QFrame, QInputDialog
 )
-from PySide6.QtGui import QDoubleValidator
-from PySide6.QtCore import Qt
+
 from app.config import CONFIG, APP_ROOT, STYLE_ROOT, EVENT_BASE_PATH
 from app.live_config import save_user_config
-from functools import partial
-import tomllib
-import copy
-import os
-import sys
 
 
 class SettingsScreen(QWidget):
@@ -18,7 +20,7 @@ class SettingsScreen(QWidget):
         super().__init__()
         self.controller = controller
         self.setWindowTitle("Settings")
-        self.widgets = {}
+        self.widgets: dict[str, dict[str, QWidget]] = {}
 
         main_layout = QVBoxLayout()
 
@@ -31,7 +33,8 @@ class SettingsScreen(QWidget):
         layout.addWidget(QLabel("⚙️ Phototron Settings"))
 
         # === Load editable_keys.cfg
-        with open(os.path.join(APP_ROOT, "app/editable_keys.cfg"), "rb") as f:
+        editable_path = APP_ROOT / "app" / "editable_keys.cfg"
+        with editable_path.open("rb") as f:
             editable = tomllib.load(f)
 
         for section, keys in editable.items():
@@ -41,53 +44,48 @@ class SettingsScreen(QWidget):
             for key, setting_type in keys.items():
                 current_value = CONFIG.get(section, {}).get(key, "")
                 label_text = key.replace("_", " ").title()
-                widget = None
+                widget: QWidget | None = None
 
-                # === Text input
+                # --- Text input
                 if setting_type == "text":
                     widget = QLineEdit(str(current_value))
 
-                # === Number input
+                # --- Number input
                 elif setting_type == "number":
                     widget = QLineEdit(str(current_value))
                     widget.setValidator(QDoubleValidator())
 
-                # === Boolean checkbox
+                # --- Boolean
                 elif setting_type == "bool":
                     widget = QCheckBox(label_text)
                     widget.setChecked(bool(current_value))
 
-                # === Select dropdown
+                # --- Select dropdowns
                 elif setting_type.startswith("select:"):
-                    source = setting_type.split(":")[1]
+                    source = setting_type.split(":", 1)[1]
                     widget = QComboBox()
-                    options = []
+                    options: list[str] = []
 
                     if source == "styles":
-                        if os.path.isdir(STYLE_ROOT):
-                            options = sorted([
-                                name for name in os.listdir(STYLE_ROOT)
-                                if os.path.isdir(os.path.join(STYLE_ROOT, name))
-                            ])
+                        if STYLE_ROOT.exists() and STYLE_ROOT.is_dir():
+                            options = sorted([p.name for p in STYLE_ROOT.iterdir() if p.is_dir()])
                         else:
                             print(f"⚠️ STYLE_ROOT missing: {STYLE_ROOT}")
 
                     elif source == "events":
-                        if os.path.isdir(EVENT_BASE_PATH):
-                            options = sorted([
-                                name for name in os.listdir(EVENT_BASE_PATH)
-                                if os.path.isdir(os.path.join(EVENT_BASE_PATH, name))
-                            ])
+                        if EVENT_BASE_PATH.exists() and EVENT_BASE_PATH.is_dir():
+                            options = sorted([p.name for p in EVENT_BASE_PATH.iterdir() if p.is_dir()])
                         else:
                             print(f"⚠️ EVENT_BASE_PATH missing: {EVENT_BASE_PATH}")
 
                     elif source == "email":
-                        template_path = CONFIG.get("email", {}).get("template_path", "app/templates/email")
-                        if os.path.isdir(template_path):
-                            options = sorted([
-                                name for name in os.listdir(template_path)
-                                if name.endswith(".html")
-                            ])
+                        # allow absolute or relative (to APP_ROOT)
+                        raw = CONFIG.get("email", {}).get("template_path", "app/templates/email")
+                        template_dir = Path(raw)
+                        if not template_dir.is_absolute():
+                            template_dir = APP_ROOT / template_dir
+                        if template_dir.exists() and template_dir.is_dir():
+                            options = sorted([p.name for p in template_dir.iterdir() if p.suffix == ".html"])
 
                     elif source == "flash_modes":
                         options = ["preview", "timed", "off"]
@@ -98,7 +96,7 @@ class SettingsScreen(QWidget):
                     elif options:
                         widget.setCurrentText(options[0])
 
-                # === Add widgets
+                # --- Add widgets to layout
                 if isinstance(widget, QCheckBox):
                     layout.addWidget(widget)
                 else:
@@ -107,25 +105,10 @@ class SettingsScreen(QWidget):
 
                 self.widgets[section][key] = widget
 
-
-
-                # === Add event folder creation
+                # --- Add Event folder creation button next to select:events
                 if setting_type == "select:events":
                     add_btn = QPushButton("➕ Add Event")
                     layout.addWidget(add_btn)
-
-                    def add_event():
-                        new_name, ok = QInputDialog.getText(self, "Create New Event", "Event Name:")
-                        if ok and new_name:
-                            new_path = os.path.join(EVENT_BASE_PATH, new_name)
-                            if not os.path.exists(new_path):
-                                os.makedirs(new_path)
-                                widget.addItem(new_name)
-                                widget.setCurrentText(new_name)
-                                QMessageBox.information(self, "Event Created", f"New event folder created:\n{new_name}")
-                            else:
-                                QMessageBox.warning(self, "Exists", "That event already exists.")
-
                     add_btn.clicked.connect(partial(self.add_event_folder, widget))
 
         scroll.setWidget(content_widget)
@@ -137,19 +120,18 @@ class SettingsScreen(QWidget):
         save_button.clicked.connect(self.save_and_restart)
         back_button = QPushButton("⬅️ Back")
         back_button.clicked.connect(self.go_back)
-
         button_layout.addWidget(save_button)
         button_layout.addWidget(back_button)
         main_layout.addLayout(button_layout)
 
         self.setLayout(main_layout)
 
-    def add_event_folder(self, combo_widget):
+    def add_event_folder(self, combo_widget: QComboBox):
         new_name, ok = QInputDialog.getText(self, "Create New Event", "Event Name:")
         if ok and new_name:
-            new_path = os.path.join(EVENT_BASE_PATH, new_name)
-            if not os.path.exists(new_path):
-                os.makedirs(new_path)
+            new_path = EVENT_BASE_PATH / new_name
+            if not new_path.exists():
+                new_path.mkdir(parents=True, exist_ok=True)
                 combo_widget.addItem(new_name)
                 combo_widget.setCurrentText(new_name)
                 QMessageBox.information(self, "Event Created", f"New event folder created:\n{new_name}")

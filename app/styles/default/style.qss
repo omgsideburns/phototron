@@ -1,26 +1,26 @@
-QWidget {
-}
-QMainWindow{
-    background-image: url("{{style_path}}/background.bmp");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-attachment: fixed;
-    background-color: black;
-
-}
-#StartButton {
-        border-radius: 50px; /* Half of desired width/height */
-        background-color: red;
-        color: white;
-        min-width: 100px;
-        min-height: 100px;
+QMainWindow {
+  background-image: url("__style__path__/background.bmp");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: red;
 }
 #SettingsButton {
-    background-color: rgba(255, 255, 255, 0);
+  background-color: red;
 }
-#IdleScreen {
-    background-color: rgba(11, 0, 85, 1);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-attachment: fixed;
+QPushButton#StartButton {
+    background-color: rgba(2, 45, 138, 1);
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: rgba(0, 106, 182, 0.56);
+    border-bottom: rgba(0, 31, 53, 0.56);
+    font: bold 14px;
+    min-width: 60px;
+    min-height: 60px;
+    padding: 6px;
+}
+QPushButton#StartButton:pressed {
+    background-color:rgba(2, 65, 138, 1);
+    border-style: inset;
 }

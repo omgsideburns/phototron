@@ -1,14 +1,15 @@
-import os
+from pathlib import Path
 import tomllib
 import tomli_w
-from app.config import APP_ROOT, USER_CONFIG_PATH
+from app.config import USER_CONFIG_PATH  # already a Path
 
-def load_user_config():
-    if os.path.exists(USER_CONFIG_PATH):
-        with open(USER_CONFIG_PATH, "rb") as f:
+def load_user_config() -> dict:
+    if USER_CONFIG_PATH.exists():
+        with USER_CONFIG_PATH.open("rb") as f:
             return tomllib.load(f)
     return {}
 
-def save_user_config(data: dict):
-    with open(USER_CONFIG_PATH, "wb") as f:
+def save_user_config(data: dict) -> None:
+    USER_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with USER_CONFIG_PATH.open("wb") as f:
         tomli_w.dump(data, f)

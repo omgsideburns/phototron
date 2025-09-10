@@ -1,19 +1,21 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from pathlib import Path
+import re
+from datetime import datetime
+
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPixmap
-from datetime import datetime
-import os
-import re
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 
 from app.collage import generate_collage
-from app.config import PHOTO_CONFIG, EVENT_LOADED, EVENT_BASE_PATH
+from app.config import PHOTO_CONFIG, EVENT_LOADED  # EVENT_LOADED is a Path
+
 
 class CaptureScreen(QWidget):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
         self.photo_index = 0
-        self.photo_paths = []
+        self.photo_paths: list[Path] = []
         self.photos_to_take = PHOTO_CONFIG.get("count", 3)
         self.countdown_seconds = PHOTO_CONFIG.get("countdown", 3)
         self.format = PHOTO_CONFIG.get("format", "jpg")
@@ -21,10 +23,10 @@ class CaptureScreen(QWidget):
         self.raw_subfolder = PHOTO_CONFIG.get("raw_path", "raw")
         self.comp_subfolder = PHOTO_CONFIG.get("composite_path", "comps")
 
-        self.raw_dir = None
-        self.comps_dir = None
-        self.capture_session_id = None
-        self.logo_path = None
+        self.raw_dir: Path | None = None
+        self.comps_dir: Path | None = None
+        self.capture_session_id: str | None = None
+        self.logo_path: Path | None = None
 
         # Layout
         layout = QVBoxLayout()
@@ -47,35 +49,34 @@ class CaptureScreen(QWidget):
         self.countdown_timer = QTimer(self)
         self.countdown_timer.timeout.connect(self.update_countdown)
 
-    def get_next_capture_session_id(self, raw_dir):
-        existing_files = os.listdir(raw_dir)
-        session_numbers = []
+    def get_next_capture_session_id(self, raw_dir: Path) -> str:
+        existing_files = [p.name for p in raw_dir.iterdir() if p.is_file()]
+        session_numbers: list[int] = []
 
         for fname in existing_files:
-            match = re.match(r"^(\d{4})-\d{2}\.\w+$", fname)
-            if match:
-                session_numbers.append(int(match.group(1)))
+            m = re.match(r"^(\d{4})-\d{2}\.\w+$", fname)
+            if m:
+                session_numbers.append(int(m.group(1)))
 
-        next_id = max(session_numbers, default=0) + 1
+        next_id = (max(session_numbers) if session_numbers else 0) + 1
         return f"{next_id:04d}"
 
-    def prepare_capture_paths(self):
-        session_path = EVENT_LOADED
+    def prepare_capture_paths(self) -> bool:
+        session_path: Path = EVENT_LOADED
         if not session_path:
             print("⚠️ No event selected.")
             return False
 
-        self.raw_dir = os.path.join(session_path, self.raw_subfolder)
-        os.makedirs(self.raw_dir, exist_ok=True)
+        self.raw_dir = session_path / self.raw_subfolder
+        self.raw_dir.mkdir(parents=True, exist_ok=True)
 
-        self.comps_dir = os.path.join(session_path, self.comp_subfolder)
-        os.makedirs(self.comps_dir, exist_ok=True)
+        self.comps_dir = session_path / self.comp_subfolder
+        self.comps_dir.mkdir(parents=True, exist_ok=True)
 
         self.capture_session_id = self.get_next_capture_session_id(self.raw_dir)
 
-        self.logo_path = os.path.join(
-            session_path, self.controller.config["collage"]["logo_filename"]
-        )
+        logo_filename = self.controller.config["collage"].get("logo_filename", "")
+        self.logo_path = (session_path / logo_filename) if logo_filename else None
 
         print(f"📁 Prepared session {self.capture_session_id}")
         print("Raw path:", self.raw_dir)
@@ -117,12 +118,14 @@ class CaptureScreen(QWidget):
             QTimer.singleShot(500, self.take_photo)
 
     def take_photo(self):
+        assert self.raw_dir is not None
         photo_num = self.photo_index + 1
         filename = f"{self.capture_session_id}-{photo_num:02d}.{self.format}"
-        photo_path = os.path.join(self.raw_dir, filename)
+        photo_path = self.raw_dir / filename
 
         try:
-            self.controller.camera.capture(photo_path)
+            # If your camera API expects a string, str() is safest:
+            self.controller.camera.capture(str(photo_path))
             self.photo_paths.append(photo_path)
             print(f"✅ Photo {photo_num} saved to {photo_path}")
         except Exception as e:
@@ -135,14 +138,16 @@ class CaptureScreen(QWidget):
             print("🎉 All photos captured.")
             self.preview_timer.stop()
 
-            composite_path = os.path.join(self.comps_dir, f"{self.capture_session_id}-composite.jpg")
+            assert self.comps_dir is not None
+            composite_path = self.comps_dir / f"{self.capture_session_id}-composite.jpg"
 
             generate_collage(
-                self.photo_paths,
-                composite_path,
-                logo_path=self.logo_path,
-                config=self.controller.config.get("collage", {})
+                self.photo_paths,            # list[Path]
+                composite_path,              # Path
+                logo_path=self.logo_path,    # Path | None
+                config=self.controller.config.get("collage", {}),
             )
 
-            self.controller.preview_screen.load_photo(composite_path)
+            # If preview_screen.load_photo expects a string, pass str()
+            self.controller.preview_screen.load_photo(str(composite_path))
             self.controller.go_to(self.controller.preview_screen)

@@ -1,12 +1,11 @@
 QWidget {
 }
 QMainWindow{
-    background-image: url("{{style_path}}/background.bmp");
+    background-image: url("__style__path__/background.bmp");
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
     background-color: red;
-
 }
 #StartButton {
         border-radius: 50px; /* Half of desired width/height */

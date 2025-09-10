@@ -1,1 +1,5 @@
 PySide6
+Numpy
+Pillow
+Tomli
+Tomli_w

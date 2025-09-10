@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=80", "setuptools-scm[simple]>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# version = "0.0.1"  # Remove any existing version parameter.
+dynamic = ["version"]
+
+# No [tool.setuptools_scm] section needed for basic usage!
+
+# just setting this here as a placeholder.. need to implement versioning soon...

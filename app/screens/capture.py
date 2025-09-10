@@ -1,13 +1,12 @@
 from pathlib import Path
 import re
-from datetime import datetime
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 
 from app.collage import generate_collage
-from app.config import PHOTO_CONFIG, EVENT_LOADED  # EVENT_LOADED is a Path
+from app.config import PHOTO_CONFIG, EVENT_LOADED
 
 
 class CaptureScreen(QWidget):
@@ -61,6 +60,8 @@ class CaptureScreen(QWidget):
         next_id = (max(session_numbers) if session_numbers else 0) + 1
         return f"{next_id:04d}"
 
+
+    # rewrite this to reference config paths... 
     def prepare_capture_paths(self) -> bool:
         session_path: Path = EVENT_LOADED
         if not session_path:

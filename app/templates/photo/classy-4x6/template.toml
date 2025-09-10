@@ -1,0 +1,79 @@
+[canvas]
+width = 1200
+height = 1800
+color = "#ffffff"      # used if no background image
+
+[background]
+image = "assets/background.png"   # optional
+fit = "cover"   # "cover" | "contain" | "stretch" | "tile" | "center"
+
+# ---- layers are rendered in order ----
+[[layers]]
+type = "image_slot"
+name = "shot1"
+x = 60
+y = 80
+w = 510
+h = 510
+anchor = "top_left"              # top_left | center | top_right | ...
+radius = 24                      # rounded corners
+border = { width = 4, color = "#00000080" }
+shadow = { dx = 0, dy = 6, blur = 18, color = "#00000033" }
+transform = { rotate = -2.0 }    # degrees
+filters = ["auto_contrast", "sharpen"]
+
+[[layers]]
+type = "image_slot"
+name = "shot2"
+x = 630
+y = 80
+w = 510
+h = 510
+radius = 24
+
+[[layers]]
+type = "image_slot"
+name = "shot3"
+x = 60
+y = 640
+w = 510
+h = 510
+radius = 24
+
+[[layers]]
+type = "image_overlay"
+image = "assets/tape.png"
+x = "50%"
+y = 620
+anchor = "top_center"
+opacity = 0.9
+
+[[layers]]
+type = "text"
+text = "{EVENT_NAME}"           # placeholders from session/event
+x = "50%"
+y = 1220
+anchor = "top_center"
+font = { path = "/usr/share/fonts/TTF/Inter-Bold.ttf", size = 56 }
+fill = "#111111"
+stroke = { width = 2, color = "#ffffff" }
+tracking = 0
+
+[[layers]]
+type = "text"
+text = "{EVENT_DATE}  •  Phototron v{APP_VERSION}"
+x = "50%"
+y = 1290
+anchor = "top_center"
+font = { path = "/usr/share/fonts/TTF/Inter-Regular.ttf", size = 28 }
+fill = "#333333"
+
+[[layers]]
+type = "image_overlay"
+image = "assets/logo.png"
+x = 1020
+y = 1660
+w = 120
+h = 120
+anchor = "bottom_right"
+opacity = 0.85

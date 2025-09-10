@@ -1,25 +1,37 @@
 from PySide6.QtCore import Qt, QPoint
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QStackedLayout, QSizePolicy, QGraphicsEffect, QGraphicsDropShadowEffect
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QPushButton,
+    QLabel,
+    QStackedLayout,
+    QSizePolicy,
+    QGraphicsEffect,
+    QGraphicsDropShadowEffect,
+)
 
 from app.widgets.slideshow import SlideshowWidget
 from app.config import SETTINGS_CONFIG
 import app.lights
 
+
 class IdleScreen(QWidget):
     def __init__(self, controller):
         super().__init__()
         self.controller = controller
-        self.setBaseSize(480, 640)    
+        self.setBaseSize(480, 640)
 
         # Slideshow..
         self.slideshow = SlideshowWidget(self)
         ssw = self.width()
         ssh = self.height()
+
         def calculate_dimensions(container_width, container_height):
             ratio = 3 / 2
             height = container_height * 0.8
             width = container_height / ratio
             return width, height
+
         w, h = calculate_dimensions(ssw, ssh)
         self.slideshow.setBaseSize
         self.slideshow.setFixedSize(w, h)
@@ -33,23 +45,27 @@ class IdleScreen(QWidget):
         # Settings button..
         self.settings_button = QPushButton("")
         self.settings_button.setObjectName("SettingsButton")
-        self.settings_button.setFixedSize(50,50)
+        self.settings_button.setFixedSize(50, 50)
         self.settings_button.setParent(self)
         self.settings_button.setFlat(True)
-        self.settings_button.move(0,0)
+        self.settings_button.move(0, 0)
         self.settings_button.raise_()
         self.settings_button.clicked.connect(self.open_settings)
 
         # Build overlay layout
-        self.overlay_layout = QVBoxLayout()
+        self.overlay_layout = QVBoxLayout()   
 
-        # Create drop shadow effect..
-        effect = QGraphicsDropShadowEffect()
-        effect.setOffset(0, 0)
-        effect.setBlurRadius(10)
-        self.slideshow.setGraphicsEffect(effect)
-        self.start_button.setGraphicsEffect(effect)
 
+        def drop_shadow(asset):
+            self.asset = asset
+            self.shadow = QGraphicsDropShadowEffect()
+            self.shadow.setOffset(4, 4)
+            self.shadow.setBlurRadius(10)
+            self.setGraphicsEffect(self.shadow)
+            return self.asset
+        
+        drop_shadow(self.start_button)
+        
         # Final layout
         main_layout = QVBoxLayout(self)
         main_layout.setAlignment(Qt.AlignCenter)
@@ -61,7 +77,7 @@ class IdleScreen(QWidget):
         # initiate lights
         app.lights.idle()
 
-# Define the button actions
+    # Define the button actions
     def start_pressed(self):
         print("START pressed")
         self.controller.capture_screen.start_sequence()
@@ -72,13 +88,15 @@ class IdleScreen(QWidget):
         self.controller.go_to(self.controller.settings_screen)
 
     def resizeEvent(self, event):
-            super().resizeEvent(None)
-            ssw = self.width()
-            ssh = self.height()
-            def calculate_dimensions(container_width, container_height):
-                ratio = 3 / 2
-                height = container_height * 0.8
-                width = height / ratio
-                return width, height
-            w, h = calculate_dimensions(ssw, ssh)
-            self.slideshow.setFixedSize(w, h)
+        super().resizeEvent(None)
+        ssw = self.width()
+        ssh = self.height()
+
+        def calculate_dimensions(container_width, container_height):
+            ratio = 3 / 2
+            height = container_height * 0.8
+            width = height / ratio
+            return width, height
+
+        w, h = calculate_dimensions(ssw, ssh)
+        self.slideshow.setFixedSize(w, h)

@@ -1,0 +1,60 @@
+# photo layout template
+# text variables
+# {DATE:%b %d, %Y}, {EVENT_NAME}, {SESSION_ID}, {APP_VERSION}
+
+
+[canvas]
+width = 1200
+height = 1800
+color = "#ffffff"
+
+[background]
+image = "assets/photo_background.png"
+fit = "cover"
+
+[[layers]]
+type = "image_slot"
+name = "shot1"
+x = 0
+y = 0
+w = 600
+h = 900
+radius = 0
+
+[[layers]]
+type = "image_slot"
+name = "shot2"
+x = 600
+y = 0
+w = 600
+h = 900
+radius = 0
+
+[[layers]]
+type = "image_slot"
+name = "shot3"
+x = 0
+y = 900
+w = 600
+h = 900
+radius = 0
+
+[[layers]]
+type = "text"
+text = "Happy Birthday!" # can use vars here
+x = "75%"
+y = 1000
+anchor = "top_center"
+font = { path = "app/styles/default/assets/DejaVuSans-Bold.ttf", size = 56 }
+fill = "#111111"
+
+#insert a logo ... commenting this out for now 
+#[[layers]]
+#type = "image_overlay"
+#image = ""
+#x = 1140
+#y = 1760
+#w = 120
+#h = 120
+#anchor = "bottom_right"
+#opacity = 0.9

@@ -1,9 +1,10 @@
-from pathlib import Path
 from PySide6.QtWidgets import QMainWindow, QStackedWidget
 from app.config import (
-    APP_ROOT, CONFIG, LAST_SESSION_FILE,
-    CAMERA_CONFIG, STYLE_CONFIG, STYLE_PATH, STYLE_ROOT,
-    EVENT_BASE_PATH, EVENT_LOADED
+    CONFIG,
+    CAMERA_CONFIG,
+    STYLE_PATH,
+    STYLE_FILE,
+    EVENT_LOADED,
 )
 from app.screens.idle import IdleScreen
 from app.screens.capture import CaptureScreen
@@ -38,8 +39,8 @@ class AppController:
         self.main_window.setCentralWidget(self.stack)
         self.main_window.setWindowTitle("📸 Phototron Photo Booth")
 
-        # bring in the selected style..
-        ssh_file = STYLE_PATH / "style.qss"
+        # bring in the selected style sheet..
+        ssh_file = STYLE_FILE
         shh = ssh_file.read_text(encoding="utf-8").replace(
             "__style__path__", STYLE_PATH.as_posix()
         )
@@ -64,8 +65,7 @@ class AppController:
         else:
             print("Event loaded:", EVENT_LOADED)
 
-    # previously used last_session.txt to remember event directories
-    # "session" now describes a users photo session
+    # "session" describes a user photo session (when someone hits start)
     # "event" describes the entire group of sessions..
     # example event="halloween party" and sessions are all the times someone hits start on the photo booth.
     # add explanations for all of this in the readme.md

@@ -1,7 +1,7 @@
 QWidget {
 }
 QMainWindow{
-    background-image: url("__style__path__/background.bmp");
+    background-image: url("__style__path__/assets/background.bmp");
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;

@@ -5,7 +5,7 @@ import sys
 import tomllib
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QDoubleValidator
+from PySide6.QtGui import QIntValidator
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QCheckBox,
     QTextEdit, QComboBox, QPushButton, QMessageBox, QScrollArea, QFrame, QInputDialog
@@ -49,21 +49,25 @@ class SettingsScreen(QWidget):
                 # --- Text input
                 if setting_type == "text":
                     widget = QLineEdit(str(current_value))
+                    widget.setProperty("setting_type", "text")
 
                 # --- Number input
                 elif setting_type == "number":
-                    widget = QLineEdit(str(current_value))
-                    widget.setValidator(QDoubleValidator())
+                    widget = QLineEdit(str(int(current_value)) if str(current_value).isdigit() else str(current_value))
+                    widget.setValidator(QIntValidator())
+                    widget.setProperty("setting_type", "number")
 
                 # --- Boolean
                 elif setting_type == "bool":
                     widget = QCheckBox(label_text)
                     widget.setChecked(bool(current_value))
+                    widget.setProperty("setting_type", "bool")
 
                 # --- Select dropdowns
                 elif setting_type.startswith("select:"):
                     source = setting_type.split(":", 1)[1]
                     widget = QComboBox()
+                    widget.setProperty("setting_type", setting_type)
                     options: list[str] = []
 
                     if source == "styles":
@@ -148,11 +152,14 @@ class SettingsScreen(QWidget):
             for key, widget in keys.items():
                 if isinstance(widget, QLineEdit):
                     text = widget.text().strip()
-                    try:
-                        value = float(text)
-                        merged_config[section][key] = value
-                    except ValueError:
-                        merged_config[section][key] = widget.text()
+                    stype = widget.property("setting_type")
+                    if stype == "number":
+                        try:
+                            merged_config[section][key] = int(text)
+                        except ValueError:
+                            merged_config[section][key] = text
+                    else:
+                        merged_config[section][key] = text
                 elif isinstance(widget, QCheckBox):
                     merged_config[section][key] = widget.isChecked()
                 elif isinstance(widget, QComboBox):

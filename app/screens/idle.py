@@ -1,17 +1,12 @@
-from PySide6.QtCore import Qt, QPoint
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QPushButton,
-    QLabel,
-    QStackedLayout,
-    QSizePolicy,
-    QGraphicsEffect,
     QGraphicsDropShadowEffect,
 )
 
 from app.widgets.slideshow import SlideshowWidget
-from app.config import SETTINGS_CONFIG
 import app.lights
 
 
@@ -54,18 +49,7 @@ class IdleScreen(QWidget):
 
         # Build overlay layout
         self.overlay_layout = QVBoxLayout()   
-
-
-        def drop_shadow(asset):
-            self.asset = asset
-            self.shadow = QGraphicsDropShadowEffect()
-            self.shadow.setOffset(4, 4)
-            self.shadow.setBlurRadius(10)
-            self.setGraphicsEffect(self.shadow)
-            return self.asset
-        
-        drop_shadow(self.start_button)
-        
+    
         # Final layout
         main_layout = QVBoxLayout(self)
         main_layout.setAlignment(Qt.AlignCenter)

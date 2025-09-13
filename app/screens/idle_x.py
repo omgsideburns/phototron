@@ -1,9 +1,8 @@
 # idle.py
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 from PySide6.QtCore import Qt
 from app.widgets.slideshow import SlideshowWidget
-from app.config import SETTINGS_CONFIG
 import lights
 
 class IdleScreenUI(QWidget):

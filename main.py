@@ -1,18 +1,15 @@
 import sys
-from PySide6.QtWidgets import QApplication, QStyleFactory
+from PySide6.QtWidgets import QApplication
 from app.core import AppController
 
-
 def choose_style():
-    # Prefer native on macOS, otherwise Fusion everywhere (including Windows/Linux)
-    available = {s.lower(): s for s in QStyleFactory.keys()}
-    if sys.platform == "darwin" and "macos" in available:
-        return available["macos"]
-    return available.get("fusion")
+    # Use the same base style across platforms
+    return "Fusion"
 
 
 def main():
     app = QApplication(sys.argv)
+    app.setAutoSipEnabled
 
     # Set a safe style
     style = choose_style()
@@ -22,6 +19,7 @@ def main():
     controller = AppController()
     win = controller.widget()
     win.resize(480, 640)
+    win.setFixedSize(480, 640)
     win.show()  # or win.showFullScreen()
 
     sys.exit(app.exec())

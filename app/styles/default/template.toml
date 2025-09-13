@@ -4,8 +4,8 @@
 
 
 [canvas]
-width = 1200
-height = 1800
+width = 2400
+height = 3600
 color = "#ffffff"
 
 [background]
@@ -15,38 +15,41 @@ fit = "cover"
 [[layers]]
 type = "image_slot"
 name = "shot1"
-x = 0
-y = 0
-w = 600
-h = 900
-radius = 0
+x = 40
+y = 40
+w = 1140
+h = 1740
+radius = 25
 
 [[layers]]
 type = "image_slot"
 name = "shot2"
-x = 600
-y = 0
-w = 600
-h = 900
-radius = 0
+x = 1220
+y = 40
+w = 1140
+h = 1740
+radius = 25
 
 [[layers]]
 type = "image_slot"
 name = "shot3"
-x = 0
-y = 900
-w = 600
-h = 900
-radius = 0
+x = 40
+y = 1820
+w = 1140
+h = 1740
+radius = 25
 
 [[layers]]
 type = "text"
-text = "Happy Birthday!" # can use vars here
+text = '''
+
+''' # can use vars here
 x = "75%"
-y = 1000
+y = 2000
 anchor = "top_center"
-font = { path = "app/styles/default/assets/DejaVuSans-Bold.ttf", size = 56 }
+font = { path = "app/styles/default/assets/DejaVuSans-Bold.ttf", size = 150 }
 fill = "#111111"
+align = "center"
 
 #insert a logo ... commenting this out for now 
 #[[layers]]

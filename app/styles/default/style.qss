@@ -6,21 +6,138 @@ QMainWindow {
   background-color: red;
 }
 #SettingsButton {
-  background-color: red;
+  background-color: none;
 }
-QPushButton#StartButton {
-    background-color: rgba(2, 45, 138, 1);
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 10px;
-    border-color: rgba(0, 106, 182, 0.56);
-    border-bottom: rgba(0, 31, 53, 0.56);
-    font: bold 14px;
+QPushButton {
+    font: 20px;
     min-width: 60px;
     min-height: 60px;
-    padding: 6px;
 }
+
+/* Start Button — bold, rounded, glossy */
+QPushButton#StartButton {
+    color: white;
+    font: 700 24px;
+    min-width: 200px;
+    min-height: 64px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 32px; /* pill */
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #00C6FF,
+        stop:1 #0072FF
+    );
+}
+
+QPushButton#StartButton:hover {
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #19D0FF,
+        stop:1 #1085FF
+    );
+}
+
 QPushButton#StartButton:pressed {
-    background-color:rgba(2, 65, 138, 1);
-    border-style: inset;
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #0066E0,
+        stop:1 #004CB2
+    );
+    padding-top: 14px;   /* tactile press */
+    padding-bottom: 10px;
+}
+
+QPushButton#StartButton:focus {
+    outline: none;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+QPushButton#StartButton:disabled {
+    background: #9aa7b0;
+    color: rgba(255,255,255,0.7);
+}
+
+/* Yes / Confirm Button — green gradient */
+QPushButton#YesButton {
+    color: white;
+    font: 600 20px;
+    min-width: 160px;
+    min-height: 52px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 26px;
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #2DD36F,
+        stop:1 #15803D
+    );
+}
+
+QPushButton#YesButton:hover {
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #3BE57D,
+        stop:1 #1C9447
+    );
+}
+
+QPushButton#YesButton:pressed {
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #137A37,
+        stop:1 #0B5E2A
+    );
+    padding-top: 12px;
+    padding-bottom: 8px;
+}
+
+QPushButton#YesButton:disabled {
+    background: #9aa7b0;
+    color: rgba(255,255,255,0.7);
+}
+
+/* No / Cancel Button — red gradient */
+QPushButton#NoButton {
+    color: white;
+    font: 600 20px;
+    min-width: 160px;
+    min-height: 52px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 26px;
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #FF6B6B,
+        stop:1 #C81E1E
+    );
+}
+
+QPushButton#NoButton:hover {
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #FF7B7B,
+        stop:1 #DA1F1F
+    );
+}
+
+QPushButton#NoButton:pressed {
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #B91C1C,
+        stop:1 #991B1B
+    );
+    padding-top: 12px;
+    padding-bottom: 8px;
+}
+
+QPushButton#NoButton:disabled {
+    background: #9aa7b0;
+    color: rgba(255,255,255,0.7);
+}
+
+/* Countdown label overlay on capture screen */
+QLabel#CountdownLabel {
+    font: 900 160px;
+    color: rgba(255,255,255,0.85);
 }

@@ -1,6 +1,14 @@
 from pathlib import Path
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QPushButton,
+    QHBoxLayout,
+    QLineEdit,
+    QSizePolicy,
+)
 from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
 
@@ -17,48 +25,63 @@ class PreviewScreen(QWidget):
 
         # Layout
         self.layout = QVBoxLayout()
+        self.layout.setSpacing(12)
         self.photo_label = QLabel("Photo will appear here")
         self.photo_label.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(self.photo_label)
+        self.photo_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        # Give the photo preview more space than controls
+        self.layout.addWidget(self.photo_label,10)
 
         # Print group
         self.print_group = QWidget()
         print_layout = QVBoxLayout()
-        self.print_prompt = QLabel("🖨️ Would you like to print this photo?")
+        print_layout.setContentsMargins(0, 0, 0, 0)
+        print_layout.setSpacing(6)
+        self.print_prompt = QLabel("What a great picture!")
         self.print_prompt.setAlignment(Qt.AlignCenter)
 
-        print_button_row = QHBoxLayout()
-        self.print_yes_btn = QPushButton("Yes ✅")
-        self.print_no_btn = QPushButton("No ❌")
+        self.print_yes_btn = QPushButton("Print My Picture!")
+        self.print_yes_btn.setObjectName("YesButton")
+        self.print_no_btn = QPushButton("Skip")
+        self.print_no_btn.setObjectName("NoButton")
         self.print_yes_btn.clicked.connect(self.handle_print_yes)
         self.print_no_btn.clicked.connect(self.handle_print_no)
-        print_button_row.addWidget(self.print_yes_btn)
-        print_button_row.addWidget(self.print_no_btn)
 
+        self.print_prompt.setWordWrap(True)
         print_layout.addWidget(self.print_prompt)
-        print_layout.addLayout(print_button_row)
+        print_layout.addSpacing(16)
+        print_layout.addWidget(self.print_yes_btn)
+        print_layout.addWidget(self.print_no_btn)
         self.print_group.setLayout(print_layout)
-        self.layout.addWidget(self.print_group)
+        # Do not stretch control group; keep it compact
+        self.layout.addWidget(self.print_group, 0)
 
         # Email group (hidden initially)
         self.email_group = QWidget()
         email_layout = QVBoxLayout()
-        self.email_prompt = QLabel("📧 Would you like to email this photo?")
+        email_layout.setContentsMargins(0, 0, 0, 0)
+        email_layout.setSpacing(6)
+        self.email_prompt = QLabel("Where should we send your photos?")
         self.email_prompt.setAlignment(Qt.AlignCenter)
-
-        email_button_row = QHBoxLayout()
-        self.email_yes_btn = QPushButton("Yes ✅")
-        self.email_no_btn = QPushButton("No ❌")
+        # Input for recipient email
+        self.email_input = QLineEdit()
+        self.email_input.setPlaceholderText("Enter email address")
+        self.email_yes_btn = QPushButton("Send it to me!")
+        self.email_yes_btn.setObjectName("YesButton")
+        self.email_no_btn = QPushButton("Skip")
+        self.email_no_btn.setObjectName("NoButton")
         self.email_yes_btn.clicked.connect(self.handle_email_yes)
         self.email_no_btn.clicked.connect(self.handle_email_no)
-        email_button_row.addWidget(self.email_yes_btn)
-        email_button_row.addWidget(self.email_no_btn)
 
+        self.email_prompt.setWordWrap(True)
         email_layout.addWidget(self.email_prompt)
-        email_layout.addLayout(email_button_row)
+        email_layout.addWidget(self.email_input)
+        email_layout.addWidget(self.email_yes_btn)
+        email_layout.addWidget(self.email_no_btn)
+        
         self.email_group.setLayout(email_layout)
         self.email_group.setVisible(False)
-        self.layout.addWidget(self.email_group)
+        self.layout.addWidget(self.email_group, 0)
 
         self.setLayout(self.layout)
 
@@ -106,7 +129,10 @@ class PreviewScreen(QWidget):
 
     def handle_email_yes(self) -> None:
         print("📧 Emailing photo...")
-        to_email = "pcx.tony@gmail.com"  # TODO: replace with user input
+        to_email = self.email_input.text().strip()
+        if not to_email:
+            print("⚠️ No email entered; skipping send.")
+            return
         if self.current_photo_path:
             send_email(to_email, str(self.current_photo_path))
         self.controller.go_to(self.controller.idle_screen)

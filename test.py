@@ -1,5 +1,4 @@
 # test.py
-from pathlib import Path
 import tomllib
 
 from app.config import (

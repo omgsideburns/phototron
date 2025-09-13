@@ -1,4 +1,3 @@
-from pathlib import Path
 import tomllib
 import tomli_w
 from app.config import USER_CONFIG_PATH  # already a Path

@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QStackedLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
 
 from app.widgets.slideshow import SlideshowWidget
 from app.config import SETTINGS_CONFIG

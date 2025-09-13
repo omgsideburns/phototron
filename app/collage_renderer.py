@@ -157,6 +157,7 @@ def draw_text(
     y,
     font_spec,
     fill,
+    align,
     stroke=None,
     tracking=0,
     anchor="top_left",
@@ -175,36 +176,13 @@ def draw_text(
     dx, dy = anchor_offset(w, h, anchor)
     cx, cy = x + dx, y + dy
 
-    # Tracking (very light): draw char-by-char with extra spacing if requested
-    if tracking:
-        advance = 0
-        for ch in text:
-            cb = draw.textbbox((0, 0), ch, font=fnt, stroke_width=sw)
-            cw = cb[2] - cb[0]
-            if stroke:
-                draw.text(
-                    (cx + advance, cy),
-                    ch,
-                    font=fnt,
-                    fill=fill,
-                    stroke_width=sw,
-                    stroke_fill=stroke["color"],
-                )
-            else:
-                draw.text((cx + advance, cy), ch, font=fnt, fill=fill)
-            advance += cw + tracking
-    else:
-        if stroke:
-            draw.text(
-                (cx, cy),
-                text,
-                font=fnt,
-                fill=fill,
-                stroke_width=sw,
-                stroke_fill=stroke["color"],
-            )
-        else:
-            draw.text((cx, cy), text, font=fnt, fill=fill)
+    draw.text(
+        (cx, cy),
+        text,
+        font=fnt,
+        fill=fill,
+        align=align,
+    )
 
 
 def render_collage(
@@ -362,6 +340,7 @@ def render_collage(
             txt = subst(raw)
             x = to_px(layer["x"], W)
             y = to_px(layer["y"], H)
+            # call draw text function
             draw_text(
                 canvas,
                 txt,
@@ -369,6 +348,7 @@ def render_collage(
                 y,
                 layer["font"],
                 layer.get("fill", "#000000"),
+                align=layer.get("align", "center"),
                 stroke=layer.get("stroke"),
                 tracking=layer.get("tracking", 0),
                 anchor=layer.get("anchor", "top_left"),

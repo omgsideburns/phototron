@@ -1,11 +1,9 @@
 from pathlib import Path
 import platform
-import time
 import numpy as np
 
 # Qt
 from PySide6.QtGui import QImage, QColor
-from PySide6.QtCore import Qt
 
 # Detect whether we’re on a Raspberry Pi.. only tested on a 5 
 ON_PI = platform.system() == "Linux" and "aarch64" in platform.machine()

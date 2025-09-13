@@ -1,9 +1,10 @@
 from pathlib import Path
 import re
 
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PySide6.QtCore import Qt, QTimer, QSize
+from PySide6.QtGui import QPixmap, QImage
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QStackedLayout
+from PySide6.QtWidgets import QGraphicsDropShadowEffect
 
 from app.collage import generate_collage
 from app.config import PHOTO_CONFIG, EVENT_LOADED
@@ -27,18 +28,32 @@ class CaptureScreen(QWidget):
         self.capture_session_id: str | None = None
         self.logo_path: Path | None = None
 
-        # Layout
+        # Layout with stacked overlay (preview + countdown overlay)
         layout = QVBoxLayout()
+
+        self.preview_container = QWidget()
+        self.preview_stack = QStackedLayout(self.preview_container)
+        self.preview_stack.setStackingMode(QStackedLayout.StackAll)
 
         self.preview_label = QLabel("📸 Camera Preview Starting...")
         self.preview_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.preview_label)
+        self.preview_stack.addWidget(self.preview_label)
 
         self.countdown_label = QLabel("")
         self.countdown_label.setAlignment(Qt.AlignCenter)
-        self.countdown_label.setStyleSheet("font-size: 48px;")
-        layout.addWidget(self.countdown_label)
+        self.countdown_label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.countdown_label.setObjectName("CountdownLabel")
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setOffset(0, 4)
+        shadow.setBlurRadius(24)
+        shadow.setColor(Qt.black)
+        self.countdown_label.setGraphicsEffect(shadow)
+        self.preview_stack.addWidget(self.countdown_label)
 
+        # Track last preview pixmap for flash/restore
+        self._last_preview_pixmap: QPixmap | None = None
+
+        layout.addWidget(self.preview_container)
         self.setLayout(layout)
 
         # Timers
@@ -101,10 +116,18 @@ class CaptureScreen(QWidget):
     def update_preview(self):
         frame = self.controller.camera.get_qt_preview_frame()
         if frame:
-            pixmap = QPixmap.fromImage(frame.scaled(800, 600, Qt.KeepAspectRatio))
+            # Scale live preview to ~75% of available area, keep aspect ratio
+            cont_size = self.preview_container.size()
+            target = QSize(max(1, int(cont_size.width() * 0.75)), max(1, int(cont_size.height() * 0.75)))
+            scaled_img = frame.scaled(target, Qt.KeepAspectRatio, Qt.FastTransformation)
+            pixmap = QPixmap.fromImage(scaled_img)
             self.preview_label.setPixmap(pixmap)
+            self._last_preview_pixmap = pixmap
 
     def begin_countdown(self):
+        # Ensure countdown label is on top of the stack
+        if hasattr(self, "preview_stack"):
+            self.preview_stack.setCurrentWidget(self.countdown_label)
         self.count = self.countdown_seconds
         self.countdown_label.setText(str(self.count))
         self.countdown_timer.start(1000)
@@ -115,8 +138,22 @@ class CaptureScreen(QWidget):
             self.countdown_label.setText(str(self.count))
         else:
             self.countdown_timer.stop()
-            self.countdown_label.setText("📷")
-            QTimer.singleShot(500, self.take_photo)
+            self.countdown_label.setText("")
+            # Ensure preview is the top widget
+            self.preview_stack.setCurrentWidget(self.preview_label)
+            # Flash only the preview area by swapping its pixmap to white
+            if self._last_preview_pixmap is not None:
+                size = self._last_preview_pixmap.size()
+                white_img = QImage(size, QImage.Format_ARGB32)
+                white_img.fill(Qt.white)
+                white_pixmap = QPixmap.fromImage(white_img)
+                # show white flash briefly
+                self.preview_label.setPixmap(white_pixmap)
+                QTimer.singleShot(150, lambda: self.preview_label.setPixmap(self._last_preview_pixmap))
+                QTimer.singleShot(160, self.take_photo)
+            else:
+                # Fallback: just take photo if no preview yet
+                self.take_photo()
 
     def take_photo(self):
         assert self.raw_dir is not None

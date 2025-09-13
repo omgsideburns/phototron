@@ -9,14 +9,17 @@ from email.mime.image import MIMEImage
 from datetime import datetime
 from pathlib import Path
 from string import Template
-from typing import Optional
+from app.account import PASSWORD, USER, FROM
 
 from app.config import EMAIL_CONFIG, APP_ROOT
 
-
 # Paths
-QUEUE_PATH: Path = APP_ROOT / EMAIL_CONFIG.get("queue_path", "app/queue/email_queue.json")
-TEMPLATE_PATH: Path = APP_ROOT / EMAIL_CONFIG.get("template_path", "app/templates/email_template.html")
+QUEUE_PATH: Path = APP_ROOT / EMAIL_CONFIG.get(
+    "queue_path", "app/queue/email_queue.json"
+)
+TEMPLATE_PATH: Path = APP_ROOT / EMAIL_CONFIG.get(
+    "template_path", "app/templates/email_template.html"
+)
 
 
 def load_template() -> Template:
@@ -27,12 +30,12 @@ def send_email(to_email: str, image_path: Path | str, retrying: bool = False) ->
     image_path = Path(image_path)
 
     msg = EmailMessage()
-    msg["From"] = f"{EMAIL_CONFIG['from_name']} <{EMAIL_CONFIG['from_email']}>"
+    msg["From"] = f"{EMAIL_CONFIG['from_name']} <{FROM}>"
     msg["To"] = to_email
     msg["Subject"] = EMAIL_CONFIG["subject"]
     msg["Message-ID"] = email.utils.make_msgid()
     msg["Date"] = email.utils.formatdate(localtime=True)
-    msg["Reply-To"] = EMAIL_CONFIG["from_email"]
+    msg["Reply-To"] = FROM
 
     # HTML body with CID reference
     template = load_template()
@@ -59,14 +62,14 @@ def send_email(to_email: str, image_path: Path | str, retrying: bool = False) ->
         if use_ssl:
             context = ssl.create_default_context()
             with smtplib.SMTP_SSL(smtp_server, smtp_port, context=context) as server:
-                server.login(EMAIL_CONFIG["username"], EMAIL_CONFIG["password"])
+                server.login(USER, PASSWORD)
                 server.send_message(msg)
         else:
             with smtplib.SMTP(smtp_server, smtp_port) as server:
                 if use_tls:
                     context = ssl.create_default_context()
                     server.starttls(context=context)
-                server.login(EMAIL_CONFIG["username"], EMAIL_CONFIG["password"])
+                server.login(USER, PASSWORD)
                 server.send_message(msg)
 
         print(f"✅ Email sent to {to_email}")

@@ -59,6 +59,13 @@ class CameraManager:
             pil_image: Image.Image = self.picam.capture_image("main")
             if pil_image is None:
                 return None
+            # Normalize to a QImage-friendly mode
+            if pil_image.mode not in ("RGB", "RGBA"):
+                # Common from Picamera2: 'RGBX' → convert to 'RGBA'
+                try:
+                    pil_image = pil_image.convert("RGBA")
+                except Exception:
+                    pil_image = pil_image.convert("RGB")
             # Convert PIL Image to QImage directly
             qimage = ImageQt(pil_image).copy()  # copy() to own memory
             return qimage

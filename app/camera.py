@@ -4,6 +4,8 @@ import numpy as np
 
 # Qt
 from PySide6.QtGui import QImage, QColor
+from PIL import Image
+from PIL.ImageQt import ImageQt
 
 # Detect whether we’re on a Raspberry Pi.. only tested on a 5 
 ON_PI = platform.system() == "Linux" and "aarch64" in platform.machine()
@@ -31,7 +33,7 @@ class CameraManager:
         if self.picam is None:
             self.picam = Picamera2()
             rotation = self.config.get("rotation", 0)
-            resolution = tuple(self.config.get("resolution", [1280, 720]))
+            resolution = tuple(self.config.get("resolution", [720, 1280]))
 
             config = self.picam.create_preview_configuration(
                 main={"size": resolution},
@@ -45,7 +47,7 @@ class CameraManager:
     def get_qt_preview_frame(self):
         if not ON_PI:
             # Return dummy frame (gray box) on macOS
-            dummy = QImage(480, 640, QImage.Format_RGB32)
+            dummy = QImage(720, 1280, QImage.Format_RGB32)
             dummy.fill(QColor("darkgray"))
             return dummy
 
@@ -53,31 +55,13 @@ class CameraManager:
             return None
 
         try:
-            frame = self.picam.capture_array("main")
-            if frame is None:
+            # Use Picamera2's Pillow integration for simplicity and rotation handling
+            pil_image: Image.Image = self.picam.capture_image("main")
+            if pil_image is None:
                 return None
-
-            # Check for frame shape... 3 or 4 width..
-            # Don't call ascontiguousarray yet — do it after reordering
-            if frame.shape[2] == 3:
-                # Convert BGR to RGB
-                frame = frame[:, :, ::-1]
-                frame = np.ascontiguousarray(frame)
-                height, width, _ = frame.shape
-                bytes_per_line = 3 * width
-                return QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
-
-            elif frame.shape[2] == 4:
-                # Convert BGRA to RGBA
-                frame = frame[:, :, [2, 1, 0, 3]]
-                frame = np.ascontiguousarray(frame)
-                height, width, _ = frame.shape
-                bytes_per_line = 4 * width
-                return QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGBA8888)
-
-            else:
-                print(f"⚠️ Unsupported channel count: {frame.shape[2]}")
-                return None
+            # Convert PIL Image to QImage directly
+            qimage = ImageQt(pil_image).copy()  # copy() to own memory
+            return qimage
         except Exception as e:
             print(f"⚠️ Preview frame error: {e}")
             return None

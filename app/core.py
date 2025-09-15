@@ -12,12 +12,18 @@ from app.screens.settings import SettingsScreen
 from app.screens.email import EmailScreen
 from app.screens.preview import PreviewScreen
 from app.camera import CameraManager
-
+from app import lights
 
 class AppController:
     def __init__(self):
         self.config = CONFIG
         self.camera = CameraManager(CAMERA_CONFIG)
+
+        # Initialize lights hardware (no-op if unavailable)
+        try:
+            lights.init()
+        except Exception as e:
+            print("lights init failed:", e)
 
         # assign screens
         self.idle_screen = IdleScreen(controller=self)

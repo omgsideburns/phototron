@@ -1,9 +1,11 @@
 flowchart TD
-
+CORE((**CORE
+MODULES**))
 a(
     **Idle / Attract Mode**
     slideshow
-START Button
+    START Button
+    *led attract lights*
 )
 
 b(
@@ -12,6 +14,7 @@ b(
     countdown
     take picture
     repeat count/take N times
+    *led focus/flash lights*
 )
 
 c(
@@ -19,13 +22,12 @@ c(
     *Show Preview* 
     Print?
     Yes/No
-)
-
-d(
-    **Email Photos**
     Email?
     Yes/No
 )
+
+TBD((**PLANNED
+MODULES**))
 
 gallery(
     **Gallery**
@@ -55,6 +57,7 @@ f(
     online gallery uploads
 )
 
-a -...- gallery & settings
+TBD -.- gallery & f
 
-a --> b --> c --> d --> a
+CORE -.-> a --> b --> c --> a
+CORE -.-> settings -.- config

@@ -1,3 +1,3 @@
 USER = "threedayweekendphoto@gmail.com"
-PASSWORD = "password here"
+PASSWORD = "vcht hbxq puft usrp"
 FROM = "threedayweekendphoto@gmail.com"

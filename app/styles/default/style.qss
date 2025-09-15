@@ -141,3 +141,41 @@ QLabel#CountdownLabel {
     font: 900 160px;
     color: rgba(255,255,255,0.85);
 }
+
+/* Preview screen prompt and status labels */
+QLabel#PreviewPrompt {
+    color: #ffffff;
+    font: 700 24px;
+    background-color: rgba(0, 0, 0, 0.45);
+    padding: 10px 14px;
+    border-radius: 8px;
+}
+
+QLabel#PreviewStatus {
+    color: #ffffff;
+    font: 700 22px;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px 14px;
+    border-radius: 10px;
+}
+
+/* Email input styling for touch screens */
+QLineEdit#EmailInput {
+    font: 700 24px;
+    min-height: 56px;
+    padding: 8px 14px;
+    border: 2px solid rgba(255,255,255,0.7);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.95);
+    color: #111;
+}
+QLineEdit#EmailInput[invalid="true"] {
+    border: 2px solid #ff4d4f;
+    background: rgba(255, 240, 240, 0.95);
+}
+
+/* Error label under email input */
+QLabel#PreviewError {
+    color: #ff4d4f;
+    font: 700 18px;
+}

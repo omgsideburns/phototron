@@ -40,7 +40,11 @@ LIGHTS_CONFIG = CONFIG.get("lights", {})
 
 # Derived paths - these are recursive and rely on each other and the order they are declared.. don't be a dumbass.
 EVENT_BASE_PATH = APP_ROOT / SETTINGS_CONFIG.get("base_event_path", "events")
-EVENT_LOADED = EVENT_BASE_PATH / SETTINGS_CONFIG.get("current_event", "default")
+# Support both legacy key "current_event" and current key "event_loaded"
+_event_name = SETTINGS_CONFIG.get("event_loaded") or SETTINGS_CONFIG.get(
+    "current_event", "default"
+)
+EVENT_LOADED = EVENT_BASE_PATH / _event_name
 STYLE_ROOT = APP_ROOT / STYLE_CONFIG.get("style_path", "app/styles")
 STYLE_PATH = STYLE_ROOT / STYLE_CONFIG.get("style_dir", "default")
 STYLE_FILE = STYLE_PATH / "style.qss"

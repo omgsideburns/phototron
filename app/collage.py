@@ -37,11 +37,11 @@ def generate_collage(
     if EVENT_LOADED:
         event_name = Path(EVENT_LOADED).name
     else:
-        event_name = cfg.get("event_name", "Event")
+        event_name = (config or {}).get("event_name", "Event")
 
     # SESSION_ID from photo filename prefix (e.g., "0007-01.jpg" -> "0007")
     m = re.match(r"^(\d{4})-", photo_paths[0].name)
-    session_id = m.group(1) if m else cfg.get("session_id", "0000")
+    session_id = m.group(1) if m else (config or {}).get("session_id", "0000")
 
     variables = {
         "EVENT_NAME": event_name,
@@ -49,6 +49,8 @@ def generate_collage(
         # placeholders for now... may add to settings
     }
 
+    # Ensure output directory exists
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     render_collage(str(tpl), shots, variables, str(output_path))
     print(f"✅ Collage saved (template): {output_path}")
     return output_path

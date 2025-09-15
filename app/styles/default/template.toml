@@ -15,28 +15,28 @@ fit = "cover"
 [[layers]]
 type = "image_slot"
 name = "shot1"
-x = 40
-y = 40
-w = 1140
-h = 1740
+x = 90
+y = 160
+w = 1080
+h = 1620
 radius = 25
 
 [[layers]]
 type = "image_slot"
 name = "shot2"
-x = 1220
-y = 40
-w = 1140
-h = 1740
+x = 1210
+y = 160
+w = 1080
+h = 1620
 radius = 25
 
 [[layers]]
 type = "image_slot"
 name = "shot3"
-x = 40
+x = 90
 y = 1820
-w = 1140
-h = 1740
+w = 1080
+h = 1620
 radius = 25
 
 [[layers]]

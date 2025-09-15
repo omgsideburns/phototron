@@ -3,7 +3,6 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QPushButton,
-    QGraphicsDropShadowEffect,
 )
 
 from app.widgets.slideshow import SlideshowWidget
@@ -58,12 +57,20 @@ class IdleScreen(QWidget):
         main_layout.addWidget(self.start_button, stretch=1)
         self.setLayout(main_layout)
 
-        # initiate lights
-        app.lights.idle()
+        # Set initial idle light level
+        try:
+            app.lights.mode_attract()
+        except Exception as e:
+            print("lights attract failed:", e)
+        
 
     # Define the button actions
     def start_pressed(self):
         print("START pressed")
+        try:
+            app.lights.mode_pre_capture(fade=True)
+        except Exception as e:
+            print("lights pre-capture failed:", e)
         self.controller.capture_screen.start_sequence()
         self.controller.go_to(self.controller.capture_screen)
 
@@ -84,3 +91,11 @@ class IdleScreen(QWidget):
 
         w, h = calculate_dimensions(ssw, ssh)
         self.slideshow.setFixedSize(w, h)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        # Refresh slideshow with newest images in random order when idle shows
+        try:
+            self.slideshow.refresh_images(shuffle=True)
+        except Exception as e:
+            print("slideshow refresh failed:", e)

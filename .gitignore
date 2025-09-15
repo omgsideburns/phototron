@@ -4,8 +4,8 @@
 # Ignore Venv
 venv
 
-# Keep passwords safe
-password.cfg
+# Keep personal info safe
+account.py
 
 # Keep default generated folders for some reason..
 !events/default/
@@ -24,4 +24,3 @@ user_config.cfg
 events/test*
 events/default/raw/*
 events/default/comps/*
-
